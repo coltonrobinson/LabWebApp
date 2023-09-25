@@ -1,0 +1,15 @@
+body {
+    background-color: blue;
+}
+
+button {
+    color: white;
+}
+
+.default_button {
+    background-color: black;
+}
+
+h1 {
+    background-color: black;
+}
