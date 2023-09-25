@@ -40,7 +40,7 @@ function App() {
   const [orderNumber, setOrderNumber] = useState('');
   const [batches, setBatches] = useState([])
   let errorElement;
-
+  let test;
   if (popupMessage) {
     errorElement = (<ErrorMessage popupMessage={popupMessage} setPopupMessage={setPopupMessage} />);
   }
