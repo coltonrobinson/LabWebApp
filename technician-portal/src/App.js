@@ -41,10 +41,6 @@ function App() {
   const [batches, setBatches] = useState([])
   let errorElement;
 
-
-  let test = 0;
-  console.log(test)
-
   if (popupMessage) {
     errorElement = (<ErrorMessage popupMessage={popupMessage} setPopupMessage={setPopupMessage} />);
   }
