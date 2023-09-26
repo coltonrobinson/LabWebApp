@@ -497,6 +497,7 @@ app.get('/api/create-reading', (req, res) => {
     })
 });
 
+
 app.get('/api/set-batch-active-state', (req, res) => {
     const batchId = req.query.batch_id;
     const activeState = req.query.active_state;
@@ -508,6 +509,19 @@ app.get('/api/set-batch-active-state', (req, res) => {
         return res.json({ 'Result': `Batch ${batchId} active state set to ${activeState}` })
     })
 });
+
+
+app.get('/api/remove-batch-location', (req, res) => {
+    const batchId = req.query.batch_id;
+
+    pool.query("UPDATE api_batch SET current_location = $1 WHERE batch_id = $2", [null, batchId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: `Error executing query: ${err}` });
+        }
+        return res.json({ 'Result': `Batch ${batchId} location removed` });
+    })
+});
+
 
 app.get('/api/set-order-active-state', (req, res) => {
     const orderId = req.query.order_id;

@@ -12,6 +12,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
     const [allReadings, setAllReadings] = useState([]);
     const [selectedSensor, setSelectedSensor] = useState(null);
     const [recentReadings, setRecentReadings] = useState([]);
+    const [loadingMessage, setLoadingMessage] = useState('Loading...')
     const refreshed = useRef(false);
 
 
@@ -125,10 +126,13 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                                 tempReferenceReadings[`setPoint${j + 1}`] = referenceString;
                                 break;
                         }
+                        if (loadingMessage) {
+                            setLoadingMessage('');
+                        }
                     }
                 }
                 newSensorGrid.push(
-                    <div className={`${elementClass} ${style}`} key={`${sensor.sensor_id}-${i}`}>
+                    <div className={`${elementClass} ${style}`} key={sensor.sensor_id}>
                         <button className={styles.default_button} onClick={() => selectSensor(sensor.sensor_id)}>{sensor.sensor_id}</button>
                         {currentReadingCell}
                         {referenceCell}
@@ -435,7 +439,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                         <StableTimeDisplay stableTime={point2StableTime} />
                         <StableTimeDisplay stableTime={point3StableTime} />
                     </div>
-                    {(sensorGrid.length > 0) ? sensorGrid : <h1 className={styles.title}>Loading...</h1>}
+                    {sensorGrid}
                 </div>
             );
             break;
@@ -456,7 +460,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                         <StableTimeDisplay stableTime={point2StableTime} />
                         <StableTimeDisplay stableTime={point3StableTime} />
                     </div>
-                    {(sensorGrid.length > 0) ? sensorGrid : <h1 className={styles.title}>Loading...</h1>}
+                    {sensorGrid}
                 </div >
             );
             break;
@@ -475,7 +479,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                         <StableTimeDisplay stableTime={point2StableTime} />
                         <StableTimeDisplay stableTime={point3StableTime} />
                     </div>
-                    {(sensorGrid.length > 0) ? sensorGrid : <h1 className={styles.title}>Loading...</h1>}
+                    {sensorGrid}
                 </div >
             );
             break;
@@ -496,7 +500,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                         <StableTimeDisplay stableTime={point2StableTime} />
                         <StableTimeDisplay stableTime={point3StableTime} />
                     </div>
-                    {(sensorGrid.length > 0) ? sensorGrid : <h1 className={styles.title}>Loading...</h1>}
+                    {sensorGrid}
                 </div >
             );
             break;
@@ -517,7 +521,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                         <StableTimeDisplay stableTime={point2StableTime} />
                         <StableTimeDisplay stableTime={point3StableTime} />
                     </div>
-                    {(sensorGrid.length > 0) ? sensorGrid : <h1 className={styles.title}>Loading...</h1>}
+                    {sensorGrid}
                 </div >
             );
             break;
@@ -526,6 +530,21 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                 <h1 className={styles.title}>No calibration menu found</h1>
             )
     }
+
+    if (sensorList.length < 1) {
+        return (
+            <>
+                <h1 className={styles.title}>No sensors found</h1>
+            </>
+        )
+    } else if (loadingMessage) {
+        return (
+            <>
+                <h1 className={styles.title}>Loading...</h1>
+            </>
+        )
+    }
+
 
     return menu;
 }

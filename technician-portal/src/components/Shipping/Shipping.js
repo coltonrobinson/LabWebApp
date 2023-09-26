@@ -26,7 +26,7 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
       .then(certificates => {
         if (certificates.length > 0) {
           const fullDate = new Date(certificates[0].timestamp)
-          const dateString = `${fullDate.getMonth()+1}/${fullDate.getDate()}/${fullDate.getFullYear()}`;
+          const dateString = `${fullDate.getMonth() + 1}/${fullDate.getDate()}/${fullDate.getFullYear()}`;
           setCertificatesGeneratedDate(dateString);
           certificateList.current = certificates.sort((a, b) => a.certificate_id - b.certificate_id);
         }
@@ -655,8 +655,9 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
   }
 
   const endShipping = () => {
-    callApi('set-order-active-state', {order_id: orderNumber, active_state: false});
+    callApi('set-order-active-state', { order_id: orderNumber, active_state: false });
     for (const batch of batches) {
+      callApi('remove-batch-location', { batch_id: batch.batch_id });
       callApi('log-batch-interaction', { department: 'shipping', start: false, technician_id: technicianId, batch_id: batch.batch_id });
     }
     setConfirmationMessage(`Order: ${orderNumber} closed`);

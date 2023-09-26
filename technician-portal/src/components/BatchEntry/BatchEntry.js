@@ -92,7 +92,6 @@ function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, t
         setBatchNumber(event.target.value);
     }
 
-    console.log(batches)
     return (
         <div className={styles.menu}>
             <form onSubmit={handleSubmit}>
@@ -102,7 +101,7 @@ function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, t
             <br />
             <hr />
             <br />
-            {batches.map(batch => <>{batch}</>)}
+            {batches.map(batch => <>{batch}</>).sort((a, b) => a.batch_id - b.batch_id)}
         </div>
     );
 }

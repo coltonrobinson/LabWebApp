@@ -3,6 +3,7 @@ import styles from "../../styles/styles.module.css";
 import callApi from "../../utils/api/callApi";
 import TestingMenu from "../TestingMenu/TestingMenu";
 import { useNavigate } from "react-router-dom";
+import ip from "../../utils/ip/ip";
 
 function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopupMessage, technicianId }) {
     let navigate = useNavigate();
@@ -123,6 +124,35 @@ function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopup
             })
     })
 
+    const downloadWorkOrder = () => {
+        fetch(`http://${ip}:8000/api/generate-work-order?batch_id=${batchNumber}`)
+            .then(response => {
+                if (response.ok) {
+                    if (response.headers.get('content-type') === 'application/json; charset=utf-8') {
+                        return response.blob();
+                    } else {
+                        console.error(`Expecting work order 'application/json' but instead got '${response.headers.get("content-type")}': ${response}`);
+                        setPopupMessage(`Failed to generate work order for batch ${batchNumber}`);
+                    }
+                } else {
+                    console.error(`Could not complete generation, response.ok: ${response.ok}`);
+                    setPopupMessage(`Failed to generate work order for batch ${batchNumber}`);
+                }
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `workOrder${batchNumber}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
     const handleHeartBeatChange = (event) => {
         setHeartBeat(event.target.value);
     }
@@ -178,16 +208,17 @@ function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopup
     return (
         <>
             <div className={styles.menu}>
-                <h1 className={styles.title}>{'Batch: ' + batchNumber + (currentLocation ? ` | Current location: ${currentLocation}` : ` | No location set`)}</h1>
-                <button className={styles.default_button} onClick={() => navigate('/batchEntry')}>Change Batch</button>
-                <form className={styles.button_and_input} onSubmit={handleLocationSubmit}>
-                    <input type='button' value={'Change location'} className={styles.default_button} onClick={handleLocationSubmit} />
-                    <input type='text' value={location} onChange={handleLocationChange} className={styles.default_text_box} placeholder={'Location'} />
-                </form>
-                <form className={styles.button_and_input} onSubmit={handleHeartBeatSubmit}>
-                    <input type='button' value={'Change heartbeat'} className={styles.default_button} onClick={handleHeartBeatSubmit} />
-                    <input type='text' value={heartbeat} onChange={handleHeartBeatChange} className={styles.default_text_box} placeholder={'Heartbeat'} />
-                </form>
+                <div className={styles.grid_menu}>
+                    <h1 className={styles.title}>{'Batch: ' + batchNumber + (currentLocation ? ` | Current location: ${currentLocation}` : ` | No location set`)}</h1>
+                    <button className={styles.default_button} onClick={() => navigate('/batchEntry')}>Change Batch</button>
+                    <button className={styles.default_button} onClick={downloadWorkOrder}>Download work order</button>
+                    <form onSubmit={handleLocationSubmit}>
+                        <input type='text' value={location} onChange={handleLocationChange} className={styles.default_text_box} placeholder={'Location'} />
+                    </form>
+                    <form onSubmit={handleHeartBeatSubmit}>
+                        <input type='text' value={heartbeat} onChange={handleHeartBeatChange} className={styles.default_text_box} placeholder={'Heartbeat'} />
+                    </form>
+                </div>
                 <br />
                 <hr />
                 <br />
