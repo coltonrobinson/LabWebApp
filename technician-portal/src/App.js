@@ -38,7 +38,8 @@ function App() {
   const [popupMessage, setPopupMessage] = useState('');
   const [order, setOrder] = useState(null);
   const [orderNumber, setOrderNumber] = useState('');
-  const [batches, setBatches] = useState([])
+  const [batches, setBatches] = useState([]);
+  const [sensorGrid, setSensorGrid] = useState([]);
   let errorElement;
 
   if (popupMessage) {
@@ -59,8 +60,8 @@ function App() {
           <Route path='/metrics' element={<Metrics />} />
           <Route path='/receiving' element={<Receiving salesOrder={salesOrder} setSalesOrder={setSalesOrder} setOrder={setOrder} />} />
           <Route path='/createSalesOrder' element={<SalesOrderForm salesOrder={salesOrder} technicianId={technicianId} setConfirmationMessage={setConfirmationMessage} setPopupMessage={setPopupMessage} order={order} />} />
-          <Route path='/batchEntry' element={<BatchEntry batchNumber={batchNumber} setBatchNumber={setBatchNumber} setSensors={setSensors} setProcedureId={setProcedureId} technicianId={technicianId} setPopupMessage={setPopupMessage} />} />
-          <Route path='/manageBatch' element={<ManageBatch batchNumber={batchNumber} sensorList={sensors} calibrationProcedureId={procedureId} setPopupMessage={setPopupMessage} technicianId={technicianId} />} />
+          <Route path='/batchEntry' element={<BatchEntry batchNumber={batchNumber} setBatchNumber={setBatchNumber} setSensors={setSensors} setProcedureId={setProcedureId} technicianId={technicianId} setPopupMessage={setPopupMessage} sensorGrid={sensorGrid} setSensorGrid={setSensorGrid} />} />
+          <Route path='/manageBatch' element={<ManageBatch batchNumber={batchNumber} sensorList={sensors} calibrationProcedureId={procedureId} setPopupMessage={setPopupMessage} technicianId={technicianId} sensorGrid={sensorGrid} setSensorGrid={setSensorGrid} />} />
           <Route path='/orderEntry' element={<OrderEntry orderNumber={orderNumber} setOrderNumber={setOrderNumber} technicianId={technicianId} setPopupMessage={setPopupMessage} setBatches={setBatches} />} />
           <Route path='/shipping' element={<Shipping setConfirmationMessage={setConfirmationMessage} technicianId={technicianId} setPopupMessage={setPopupMessage} orderNumber={orderNumber} batches={batches} />} />
           <Route path='/confirmation' element={<ConfirmationScreen confirmationMessage={confirmationMessage} />} />

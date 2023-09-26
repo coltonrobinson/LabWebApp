@@ -3,12 +3,16 @@ import styles from "../../styles/styles.module.css";
 import callApi from "../../utils/api/callApi";
 import { useNavigate } from "react-router-dom";
 
-function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, technicianId, setPopupMessage }) {
+function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, technicianId, setPopupMessage, sensorGrid, setSensorGrid }) {
     let navigate = useNavigate();
     const [batches, setBatches] = useState([<h1 className={styles.title}>Loading...</h1>]);
 
     useEffect(() => {
         let isMounted = true;
+
+        if (sensorGrid.length > 0) {
+            setSensorGrid([]);
+        }
 
         const handleButtonClick = (batch) => {
             setBatchNumber(batch.batch_id);
@@ -35,32 +39,32 @@ function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, t
                         setBatches([<h1 className={styles.title}>No batches found</h1>]);
                         return;
                     }
-                    let batchList = [];
-                    const promises = response.map(batch => {
-                        return callApi('get-sensors-by-batch-id', { batch_id: batch.batch_id })
-                            .then(sensors => {
-                                batchList.push(
-                                    <button key={batch.batch_id} className={styles.batch_button} onClick={() => handleButtonClick(batch)}>
-                                        {`Batch: ${batch.batch_id} | Order: ${batch.order_id} | Sensors: ${sensors.length} | `}
-                                        <span className={styles[`calibration_${batch.calibration_procedure_id}`]}>{`CP: ${batch.calibration_procedure_id}`}</span>
-                                    </button>
-                                );
-                            });
-                    });
+                    const batchList = []
+                    const orders = [...new Set(response.map(batch => batch.order_id))].sort((a, b) => b - a)
 
-                    Promise.all(promises).then(() => {
+                    for (const order of orders) {
+                        const batches = [...new Set(response.filter(batch => batch.order_id === order))].sort((a, b) => b - a);
+                        batchList.push(
+                            <>
+                            <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
+                            {batches.map(batch => {
+                                return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} />
+                            })}
+                            <hr />
+                            </>
+                        )
+                    }
+
                         if (isMounted) {
-                            const newBatchList = batchList.sort((a, b) => a.batch_id - b.batch_id);
-                            setBatches(newBatchList);
+                            setBatches(batchList);
                         }
-                    });
                 });
         }
 
         return () => {
             isMounted = false;
         };
-    }, [setBatchNumber, setSensors, setProcedureId, navigate, technicianId, setPopupMessage, batches.length]);
+    }, [setBatchNumber, setSensors, setProcedureId, navigate, technicianId, setPopupMessage, batches.length, sensorGrid.length, setSensorGrid]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -101,9 +105,22 @@ function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, t
             <br />
             <hr />
             <br />
-            {batches.map(batch => <>{batch}</>).sort((a, b) => a.batch_id - b.batch_id)}
+            {batches}
         </div>
     );
+}
+
+function BatchDisplay({ batch, handleButtonClick }) {
+    return (
+        <>
+            <button key={batch.batch_id} className={styles.batch_button} onClick={() => handleButtonClick(batch)}>
+                {`Batch: ${batch.batch_id} | Sensors: ${batch.sensors ? batch.sensors.length : 0} | `}
+                <span className={styles[`calibration_${batch.calibration_procedure_id}`]}>{`CP: ${batch.calibration_procedure_id}`}</span>
+            </button>
+        </>
+    )
+
+
 }
 
 export default BatchEntry;

@@ -5,9 +5,8 @@ import TestingMenu from "../TestingMenu/TestingMenu";
 import { useNavigate } from "react-router-dom";
 import ip from "../../utils/ip/ip";
 
-function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopupMessage, technicianId }) {
+function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopupMessage, technicianId, sensorGrid, setSensorGrid }) {
     let navigate = useNavigate();
-    const [sensorGrid, setSensorGrid] = useState([]);
     const [heartbeat, setHeartBeat] = useState('');
     const [location, setLocation] = useState('');
     const [currentLocation, setCurrentLocation] = useState('');

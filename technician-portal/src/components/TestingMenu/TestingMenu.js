@@ -530,7 +530,6 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                 <h1 className={styles.title}>No calibration menu found</h1>
             )
     }
-
     if (sensorList.length < 1) {
         return (
             <>
