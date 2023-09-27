@@ -66,7 +66,9 @@ app.get('/api/get-calibrations-by-month', (req, res) => {
                 ON api_order.order_id = api_batch.order_id
                 INNER JOIN api_sensor
                 ON api_batch.batch_id = api_sensor.batch_id
-                WHERE received_timestamp > $1 AND received_timestamp < $2`, [startDate, endDate], (err, result) => {
+                WHERE received_timestamp > $1
+                AND received_timestamp < $2
+                AND api_sensor.certificate_id IS NOT NULL`, [startDate, endDate], (err, result) => {
         if (err) {
             return res.status(500).json({ error: `Error executing query: ${err}` });
         }
