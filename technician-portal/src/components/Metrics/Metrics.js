@@ -23,6 +23,7 @@ function Metrics() {
   const [totalSensors, setTotalSensors] = useState([]);
   const calibrationProcedures = useRef('');
   const [datasets, setDataSets] = useState([]);
+  const [totalDataSets, setTotalDataSets] = useState([]);
 
   useEffect(() => {
     const today = new Date()
@@ -49,13 +50,21 @@ function Metrics() {
 
       const newDatasets = [];
       for (let i = 0; i < sensorsData[0].length; i++) {
-        newDatasets.push(
-          {
-            label: (i !== sensorsData[0].length-1) ? `CP: ${i+1}` : 'Total sensors',
+        if (i === sensorsData[0].length - 1) {
+          setTotalDataSets([{
+            label: 'Total sensors',
             data: [sensorsData[0][i], sensorsData[1][i], sensorsData[2][i]],
             backgroundColor: colors[i],
-          }
-        )
+          }])
+        } else {
+          newDatasets.push(
+            {
+              label: `CP: ${i + 1}`,
+              data: [sensorsData[0][i], sensorsData[1][i], sensorsData[2][i]],
+              backgroundColor: colors[i],
+            }
+          )
+        }
       }
       setDataSets(newDatasets);
       setTotalSensors(sensorsData);
@@ -66,7 +75,7 @@ function Metrics() {
     }
   }, [datasets, totalSensors]);
 
-  const options = {
+  const byProcedureOptions = {
     responsive: true,
     plugins: {
       legend: {
@@ -79,16 +88,39 @@ function Metrics() {
     },
   };
 
+  const totalOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      title: {
+        display: true,
+        text: 'Total Sensors Calibrated',
+      },
+    },
+  };
+
   const labels = monthNames.slice(today.getMonth() - 2, today.getMonth() + 1);
 
-  const data = {
+  const byProcedureData = {
     labels,
     datasets: datasets,
   };
 
+  const totalData = {
+    labels,
+    datasets: totalDataSets,
+  };
+
   return (
-    <div className={styles.graph}>
-      {<Bar options={options} data={data} />}
+    <div className={styles.graph_grid}>
+      <div className={styles.graph}>
+        {<Bar options={byProcedureOptions} data={byProcedureData} />}
+      </div>
+      <div className={styles.graph}>
+        {<Bar options={totalOptions} data={totalData} />}
+      </div>
     </div>
   );
 }
