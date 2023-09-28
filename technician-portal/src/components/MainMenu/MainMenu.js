@@ -11,7 +11,7 @@ function MainMenu() {
             <button className={styles.default_button} onClick={() => navigate('/orderEntry')}>Shipping</button>
             <br /><br /><br />
             <button className={styles.default_button} onClick={() => navigate('/labView')}>Lab View</button>
-            {/* <button className={styles.default_button} onClick={() => navigate('/metrics')}>Metrics</button> */}
+            <button className={styles.default_button} onClick={() => navigate('/metrics')}>Metrics</button>
         </div>
     );
 }

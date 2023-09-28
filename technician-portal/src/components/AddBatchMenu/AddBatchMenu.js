@@ -37,14 +37,25 @@ function AddBatchMenu({ technicianId, calibrationProcedureId, batchNumber, setPo
         }
     }
 
-    const handleSetLocation = (event) => {
-        event.preventDefault()
-        callApi('create-location-log', { batch_id: batchNumber, location: location })
-            .then(() => {
-                setPopupMessage(`Batch ${batchNumber} location set to ${location}`);
-                setCurrentLocation(location);
-                setLocation('');
-            })
+    const handleSetLocation = async (event) => {
+        if (!location) {
+            return;
+        }
+        event.preventDefault();
+        const response = await callApi('create-location-log', { 'location': location, 'batch_id': batchNumber })
+        if (!response.error) {
+            setPopupMessage(`Batch moved to ${location}`);
+            setCurrentLocation(location);
+            setLocation('');
+            if (location.startsWith('T')) {
+                callApi('log-batch-interaction', { department: 'testing', start: true, technician_id: technicianId, batch_id: batchNumber })
+            } else if (location.startsWith('R')) {
+                callApi('log-batch-interaction', { department: 'receiving', start: false, technician_id: technicianId, batch_id: batchNumber })
+            }
+        } else {
+            setPopupMessage('The batch was not moved successfully');
+            console.error(response.error)
+        }
     }
 
     const checkStatus = () => {

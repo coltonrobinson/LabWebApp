@@ -25,7 +25,7 @@ def print_labels():
 
 @app.route('/print-certificates/', methods=['GET', 'POST'])
 def print_pdf():
-    certificateList = json.loads(request.args.get('certificate_list'))
+    certificateList = request.args.get('certificate_list').split(',')
     if type(certificateList) == int:
         certificateList = [certificateList]
     merger = PdfMerger()

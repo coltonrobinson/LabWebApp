@@ -113,6 +113,12 @@ function Metrics() {
     datasets: totalDataSets,
   };
 
+  if (totalDataSets.length === 0) {
+    return (
+      <h1 className={styles.title}>Loading...</h1>
+    )
+  }
+
   return (
     <div className={styles.graph_grid}>
       <div className={styles.graph}>

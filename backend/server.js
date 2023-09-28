@@ -719,6 +719,9 @@ app.get('/api/create-sensor', (req, res) => {
 app.get('/api/change-sensor-heartbeat', async (req, res) => {
     let sensorId = req.query.sensor_id;
     let reportInterval = req.query.heartbeat;
+    if (Number.isNaN(parseInt(reportInterval))) {
+        return res.json({ Result: 'Heartbeat must be a number' })
+    }
 
     let url = `https://www.imonnit.com/json/SensorSetHeartbeat/`;
     const parameters = {
@@ -730,14 +733,13 @@ app.get('/api/change-sensor-heartbeat', async (req, res) => {
     for (const parameter in parameters) {
         params.append(parameter, parameters[parameter]);
     };
-
     try {
         const response = await fetch(`${url}?${params.toString()}`, { headers: headers, });
-
-        if (response['Result'] === 'Success') {
-            res.json(response);
+        if (response.ok) {
+            const data = await response.json();
+            res.status(response.status).json(data);
         } else {
-            res.json({ 'Result': `Failed: ${response.json()}` });
+            res.status(response.status).json({ Result: `Request failed with status ${response.status}` });
         }
     } catch (error) {
         console.error(error);
@@ -1061,8 +1063,6 @@ app.get('/api/generate-certificate', async (req, res) => {
                 if (error) {
                     console.error("Error sending PDF to Flask API:", error);
                     res.status(500).json({ error: "Error sending PDF to Flask API" });
-                } else {
-                    console.log("PDF sent to Flask API successfully");
                 }
             })
             res.setHeader("Content-Disposition", `attachment; filename=MNT-${certificateId}.pdf`);

@@ -156,7 +156,7 @@ function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopup
         setHeartBeat(event.target.value);
     }
 
-    const handleHeartBeatSubmit = (event) => {
+    const handleHeartBeatSubmit = async (event) => {
         if (!heartbeat) {
             return;
         }
@@ -165,13 +165,20 @@ function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopup
         for (const sensor of sensorList) {
             try {
                 promises.push(callApi('change-sensor-heartbeat', { sensor_id: sensor.sensor_id, heartbeat: heartbeat }));
+                callApi('change-sensor-heartbeat', { sensor_id: sensor.sensor_id, heartbeat: heartbeat })
             } catch (error) {
                 console.error(error);
                 setPopupMessage(`Sensor ${sensor.sensor_id} failed: ${error}`)
             }
         }
-        Promise.all(promises);
-        setPopupMessage(`Heartbeat changed to ${heartbeat} minutes`);
+        const responses = await Promise.all(promises);
+        for (const response of responses) {
+            if (response.Result === 'Success') {
+                setPopupMessage(`Heartbeat changed to ${heartbeat} minutes`);
+            } else {
+                setPopupMessage('Heartbeats not changed successfully');
+            }
+        }
         setHeartBeat('');
     }
 

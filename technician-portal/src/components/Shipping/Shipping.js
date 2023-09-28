@@ -585,7 +585,6 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
       setPopupMessage(`There are no certificates to print`)
     }
 
-    console.log()
       try {
         await callApi('print-certificates', {certificate_list: certificateList.current.map(certificate => certificate.certificate_id)})
       } catch (error) {
