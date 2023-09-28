@@ -11,6 +11,7 @@ const { addMonths } = require('date-fns');
 function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, orderNumber, batches }) {
   const [certificatesGeneratedDate, setCertificatesGeneratedDate] = useState(null);
   const [labelsPrinted, setLabelsPrinted] = useState(false);
+  const [certificatesPrinted, setCertificatesPrinted] = useState(false);
   const [certificatesDownloaded, setCertificatesDownloaded] = useState(false);
   const [returnRecordGenerated, setreturnRecordGenerated] = useState(false);
   const [confirmationArray, setConfirmationArray] = useState(false);
@@ -579,6 +580,21 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
       setLabelsPrinted(true)
     }
   }
+  const printCertificates = async () => {
+    if (certificateList.current.length === 0) {
+      setPopupMessage(`There are no certificates to print`)
+    }
+
+    console.log()
+      try {
+        await callApi('print-certificates', {certificate_list: certificateList.current.map(certificate => certificate.certificate_id)})
+      } catch (error) {
+        console.error(error)
+        setPopupMessage('Unable to print certificates');
+        return;
+      }
+      setCertificatesPrinted(true)
+  }
 
   const createReturnRecord = () => {
     fetch(`http://${ip}:8000/api/generate-return-record/?order_id=${orderNumber}`)
@@ -645,8 +661,8 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
     if (!labelsPrinted) {
       confirmationArray.push(`The labels for this order have not been printed`);
     }
-    if (!certificatesDownloaded) {
-      confirmationArray.push(`The certificates for this order have not been downloaded`);
+    if (!certificatesDownloaded && !certificatesPrinted) {
+      confirmationArray.push(`The certificates for this order have not been downloaded or printed`);
     }
     if (!returnRecordGenerated) {
       confirmationArray.push(`The return record for this order has not been downloaded`)
@@ -664,75 +680,21 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
     navigate('/confirmation');
   }
 
-  let certificateSection = (
-    <>
-      <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates</span>
-    </>
-  )
-
-  let labelSection = (
-    <>
-      <span className={`${styles.status_message} ${styles.status_dot_red}`}>No labels printed</span>
-    </>
-  )
-
-  let downloadSection = (
-    <>
-      <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>
-    </>
-  )
-
-  let returnRecordSection = (
-    <>
-      <span className={`${styles.status_message} ${styles.status_dot_red}`}>No return record</span>
-    </>
-  )
-
-  if (certificatesGeneratedDate) {
-    certificateSection = (
-      <>
-        <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates generated on {certificatesGeneratedDate}</span>
-      </>
-    )
-  }
-
-  if (labelsPrinted) {
-    labelSection = (
-      <>
-        <span className={`${styles.status_message} ${styles.status_dot_green}`}>Labels printed</span>
-      </>
-    )
-  }
-
-  if (certificatesDownloaded) {
-    downloadSection = (
-      <>
-        <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates downloaded</span>
-      </>
-    )
-  }
-
-  if (returnRecordGenerated) {
-    returnRecordSection = (
-      <>
-        <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record downloaded</span>
-      </>
-    )
-  }
-
   return (
     <>
       <div className={styles.menu}>
         {confirmationArray.length > 0 ? <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={endShipping} /> : <></>}
         <h1 className={styles.title}>Order: {orderNumber}</h1>
-        <button className={styles.default_button_half} onClick={generateCertificates}>Create Certificates</button>
-        {certificateSection}
+        <button className={styles.default_button_half} onClick={generateCertificates}>Create certificates</button>
+        {certificatesGeneratedDate ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates generated on {certificatesGeneratedDate}</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates</span>}
         <button className={styles.default_button_half} onClick={printCertificateLabels}>Print labels</button>
-        {labelSection}
+        {labelsPrinted ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Labels printed</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No labels printed</span>}
+        <button className={styles.default_button_half} onClick={printCertificates}>Print certificates</button>
+        {certificatesPrinted ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates printed</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates printed</span>}
         <button className={styles.default_button_half} onClick={downloadCertificates}>Download certificates</button>
-        {downloadSection}
+        {certificatesDownloaded ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates downloaded</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
         <button className={styles.default_button_half} onClick={createReturnRecord}>Download return record</button>
-        {returnRecordSection}
+        {returnRecordGenerated ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record downloaded</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
         <button className={styles.default_button} onClick={handleCloseOrder}>Close Order</button>
         <div className={styles.batches_container}>
           {batches.length > 0 ? batches.map(batch => <div className={styles.shipping_batches}>{batch.current_location ? `Batch ${batch.batch_id} | Current location: ${batch.current_location}` : `Batch ${batch.batch_id} (Shipped)`}</div>) : <></>}

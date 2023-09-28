@@ -1,6 +1,8 @@
 from flask import Flask, request
 from flask_cors import CORS
+from pypdf import PdfMerger
 from zebra import Zebra
+import requests
 import json
 import cups
 import os
@@ -21,19 +23,32 @@ def print_labels():
     z.output(label)
     return 'Printed label successfully'
 
-@app.route('/print-pdf/', methods=['GET', 'POST'])
+@app.route('/print-certificates/', methods=['GET', 'POST'])
 def print_pdf():
-    pdfBytes = request.data
-    print(pdfBytes)
-    # with open(os.path.join('temp.pdf'), 'wb') as file:
-    #     file.write(pdfBytes)
+    certificateList = json.loads(request.args.get('certificate_list'))
+    if type(certificateList) == int:
+        certificateList = [certificateList]
+    merger = PdfMerger()
+    certificateList.sort()
+    for certificate in certificateList:
+        r = requests.get(f"http://192.168.1.244:8000/api/generate-certificate?certificate_id={certificate}")
+        with open(f'{certificate}.pdf', 'wb') as file:
+            file.write(r.content)
+        merger.append(f'{certificate}.pdf')
+            
+    merger.write(f'certificates.pdf')
+    merger.close()
+    for certificate in certificateList:
+        try:
+            os.remove(f'{certificate}.pdf')
+        except FileNotFoundError:
+            pass
 
-    # conn = cups.Connection()
-    # printerName = 'HP-ColorLaserJet-M255-M256'
-    # job_id = conn.createJob(printer_name, 'Print PDF Job', {})
-    # conn.printFile(printer_name, 'temp.pdf', '', {})
-    	
-    # conn.cancelJob(job_id)
+    conn = cups.Connection()
+    printerName = 'HP-ColorLaserJet-M255-M256'
+    job_id = conn.createJob(printerName, 'Print PDF Job', {})
+    conn.printFile(printerName, 'certificates.pdf', 'Certificates.pdf', {})
+    conn.cancelJob(job_id)
 
     return 'Printed PDF successfully'
 
