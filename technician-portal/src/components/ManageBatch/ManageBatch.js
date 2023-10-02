@@ -4,12 +4,15 @@ import callApi from "../../utils/api/callApi";
 import TestingMenu from "../TestingMenu/TestingMenu";
 import { useNavigate } from "react-router-dom";
 import ip from "../../utils/ip/ip";
+import ConfirmationPopup from "../ConfirmationPopup/ConfirmationPopup";
 
-function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopupMessage, technicianId, sensorGrid, setSensorGrid }) {
+function ManageBatch({ batchNumber, sensorList, setSensorList, calibrationProcedureId, setPopupMessage, technicianId, sensorGrid, setSensorGrid }) {
     let navigate = useNavigate();
     const [heartbeat, setHeartBeat] = useState('');
     const [location, setLocation] = useState('');
     const [currentLocation, setCurrentLocation] = useState('');
+    const [confirmationArray, setConfirmationArray] = useState(false);
+    const [sensor, setSensor] = useState('');
     const readings = useRef(null);
     let setPoints;
 
@@ -211,18 +214,61 @@ function ManageBatch({ batchNumber, sensorList, calibrationProcedureId, setPopup
         }
     }
 
+    const handleSensorChange = (event) => {
+        setSensor(event.target.value)
+    }
+
+    const handleSensorSubmit = (event) => {
+        event.preventDefault();
+        const sensorId = parseInt(sensor.split(':')[0])
+        if (sensorList.filter(sensorObject => sensorObject.sensor_id === sensorId).length > 0) {
+            setConfirmationArray([`Would you like to REMOVE sensor ${sensorId} from batch ${batchNumber}?`])
+        } else {
+            setConfirmationArray([`Would you like to ADD sensor ${sensorId} to batch ${batchNumber}?`])
+        }
+    }
+
+    const handleSensorConfirm = () => {
+        const sensorId = parseInt(sensor.split(':')[0])
+        if (sensorList.filter(sensorObject => sensorObject.sensor_id === sensorId).length > 0) {
+            callApi('remove-sensor-from-batch', {sensor_id: sensorId})
+            .then(response => {
+                setPopupMessage(response.Result);
+                setSensorList(sensorList.filter(sensorObject => sensorObject.sensor_id !== sensorId));
+            })
+        } else {
+            callApi('create-sensor', {sensor_id: sensorId, check_digit: sensor.split(':')[1], batch_id: batchNumber})
+            .then(response => {
+                if (response[0].sensor_id !== sensorId) {
+                    setPopupMessage(response.Result);
+                    return;
+                }
+                callApi('get-sensors', { 'batch_id': batchNumber })
+                    .then(data => {
+                        setSensorList(data);
+                        setPopupMessage(`Sensor ${sensorId} added to batch ${batchNumber}`);
+                    })
+            })
+        }
+        setSensor('')
+    }
+
     return (
         <>
             <div className={styles.menu}>
+                {confirmationArray.length > 0 ? <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={handleSensorConfirm} /> : <></>}
                 <div className={styles.grid_menu}>
                     <h1 className={styles.title}>{'Batch: ' + batchNumber + (currentLocation ? ` | Current location: ${currentLocation}` : ` | No location set`)}</h1>
-                    <button className={styles.default_button} onClick={() => navigate('/batchEntry')}>Change Batch</button>
+                    <button className={styles.default_button} onClick={() => navigate('/batchEntry')}>Change batch</button>
                     <button className={styles.default_button} onClick={downloadWorkOrder}>Download work order</button>
                     <form onSubmit={handleLocationSubmit}>
                         <input type='text' value={location} onChange={handleLocationChange} className={styles.default_text_box} placeholder={'Location'} />
                     </form>
                     <form onSubmit={handleHeartBeatSubmit}>
                         <input type='text' value={heartbeat} onChange={handleHeartBeatChange} className={styles.default_text_box} placeholder={'Heartbeat'} />
+                    </form>
+                    <form onSubmit={handleSensorSubmit}>
+                        <input type='text' value={sensor} onChange={handleSensorChange} className={styles.default_text_box} placeholder={'Add/remove sensor'} />
                     </form>
                 </div>
                 <br />

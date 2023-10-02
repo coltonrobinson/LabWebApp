@@ -817,6 +817,20 @@ app.get('/api/get-sensors-by-batch-id', (req, res) => {
     })
 })
 
+app.get('/api/remove-sensor-from-batch', (req, res) => {
+    const sensorId = req.query.sensor_id;
+
+    pool.query(`UPDATE api_sensor
+                SET batch_id = NULL
+                WHERE sensor_id = $1;`, [sensorId], (err, result) => {
+
+        if (err) {
+            return res.status(500).json({ error: `Error executing query: ${err}` });
+        }
+        res.json({ Result: 'Sensor successfully removed from batch' });
+    })
+})
+
 app.get('/api/remove-sensor', (req, res) => {
     const sensorId = req.query.sensor_id;
     const checkDigit = req.query.check_digit

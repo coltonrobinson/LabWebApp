@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import styles from "../../styles/styles.module.css";
 import callApi from '../../utils/api/callApi';
 
-ChartJS.register(
+Chart.register(
   CategoryScale,
   LinearScale,
   BarElement,
@@ -12,6 +12,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
 
 function Metrics() {
   const monthNames = [
@@ -29,7 +30,7 @@ function Metrics() {
     const today = new Date()
 
     const fetchData = async () => {
-      const colors = ['red', 'blue', 'yellow', 'red', 'yellow', 'green']
+      const colors = ['#FF000095', '#0000FF95', '#FFFF0095', '#FF000095', '#FFFF0095', '#08afe695']
       const promises = [];
       calibrationProcedures.current = await callApi('get-calibration-procedures')
       for (let i = 2; i >= 0; i--) {
@@ -55,13 +56,21 @@ function Metrics() {
             label: 'Total sensors',
             data: [sensorsData[0][i], sensorsData[1][i], sensorsData[2][i]],
             backgroundColor: colors[i],
+            borderColor: '#333',
+            borderWidth: 1,
+            hoverBorderWidth: 2,
+            borderRadius: 5,
           }])
         } else {
           newDatasets.push(
             {
-              label: `CP: ${i + 1}`,
+              label: `CP ${i + 1}`,
               data: [sensorsData[0][i], sensorsData[1][i], sensorsData[2][i]],
               backgroundColor: colors[i],
+              borderColor: '#333',
+              borderWidth: 1,
+              hoverBorderWidth: 2,
+              borderRadius: 5,
             }
           )
         }

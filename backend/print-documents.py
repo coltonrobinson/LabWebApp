@@ -32,6 +32,8 @@ def print_pdf():
     certificateList.sort()
     for certificate in certificateList:
         r = requests.get(f"http://192.168.1.244:8000/api/generate-certificate?certificate_id={certificate}")
+        if r.status_code != 200:
+            return 'Unable to get certificate'
         with open(f'{certificate}.pdf', 'wb') as file:
             file.write(r.content)
         merger.append(f'{certificate}.pdf')
@@ -51,6 +53,12 @@ def print_pdf():
     conn.cancelJob(job_id)
 
     return 'Printed PDF successfully'
+
+@app.route('/test/', methods=['GET', 'POST'])
+def test():
+    data = request.files
+    print(data)
+    return 'Received file successfully'
 
 if __name__ == '__main__':
     app.run(host='192.168.1.79', port=8000)

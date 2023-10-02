@@ -34,6 +34,10 @@
     box-sizing: border-box;
 }
 
+.default_button:active {
+    box-shadow: 2px 2px 5px #333;
+}
+
 .default_button:hover {
     background-color: #08afe6;
 }
@@ -54,6 +58,11 @@
     background-color: #08afe6;
 }
 
+
+.default_button_half:active {
+    box-shadow: 2px 2px 5px #333;
+}
+
 .batch_button:hover {
     background-color: #c5c5c5;
 }
@@ -69,6 +78,10 @@
     margin: 5px;
     width: 32%;
     box-sizing: border-box;
+}
+
+.batch_button:active {
+    box-shadow: 2px 2px 5px #333;
 }
 
 .calibration_1 {
@@ -118,6 +131,10 @@
     cursor: pointer;
 }
 
+.home_button:active {
+    box-shadow: 2px 2px 5px #333;
+}
+
 .sign_in_button {
     width: 100px;
     height: 35px;
@@ -132,6 +149,10 @@
 
 .sign_in_button:hover {
     background-color: lightgrey;
+}
+
+.sign_in_button {
+    box-shadow: 2px 2px 5px #333;
 }
 
 .sign_in_container {
