@@ -23,42 +23,18 @@ def print_labels():
     z.output(label)
     return 'Printed label successfully'
 
-@app.route('/print-certificates/', methods=['GET', 'POST'])
-def print_pdf():
-    certificateList = request.args.get('certificate_list').split(',')
-    if type(certificateList) == int:
-        certificateList = [certificateList]
-    merger = PdfMerger()
-    certificateList.sort()
-    for certificate in certificateList:
-        r = requests.get(f"http://192.168.1.244:8000/api/generate-certificate?certificate_id={certificate}")
-        if r.status_code != 200:
-            return 'Unable to get certificate'
-        with open(f'{certificate}.pdf', 'wb') as file:
-            file.write(r.content)
-        merger.append(f'{certificate}.pdf')
-            
-    merger.write(f'certificates.pdf')
-    merger.close()
-    for certificate in certificateList:
-        try:
-            os.remove(f'{certificate}.pdf')
-        except FileNotFoundError:
-            pass
+@app.route('/print-pdf/', methods=['GET', 'POST'])
+def test():
+    data = request.data
+    with open('recentPdf.pdf', 'wb') as file:
+        file.write(data)
 
     conn = cups.Connection()
     printerName = 'HP-ColorLaserJet-M255-M256'
     job_id = conn.createJob(printerName, 'Print PDF Job', {})
-    conn.printFile(printerName, 'certificates.pdf', 'Certificates.pdf', {})
+    conn.printFile(printerName, 'recentPdf.pdf', 'recentPdf.pdf', {})
     conn.cancelJob(job_id)
-
     return 'Printed PDF successfully'
-
-@app.route('/test/', methods=['GET', 'POST'])
-def test():
-    data = request.files
-    print(data)
-    return 'Received file successfully'
 
 if __name__ == '__main__':
     app.run(host='192.168.1.79', port=8000)

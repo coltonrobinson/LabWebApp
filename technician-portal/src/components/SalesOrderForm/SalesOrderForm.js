@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import ip from "../../utils/ip/ip";
 import styles from "../../styles/styles.module.css";
 import callApi from "../../utils/api/callApi";
 import DropDown from "../DropDown/DropDown";
@@ -37,33 +36,6 @@ function SalesOrderForm({ salesOrder, technicianId, setConfirmationMessage, setP
                     .catch(error => {
                         console.error(error);
                     })
-
-                fetch(`http://${ip}:8000/api/generate-work-order?batch_id=${batch.batch_id}`)
-                    .then(response => {
-                        if (response.ok) {
-                            if (response.headers.get('content-type') === 'application/json; charset=utf-8') {
-                                return response.blob();
-                            } else {
-                                console.error(`Expecting work order 'application/json' but instead got '${response.headers.get("content-type")}': ${response}`);
-                                setPopupMessage(`Failed to generate work order for batch ${batch.batch_id}`);
-                            }
-                        } else {
-                            console.error(`Could not complete generation, response.ok: ${response.ok}`);
-                            setPopupMessage(`Failed to generate work order for batch ${batch.batch_id}`);
-                        }
-                    })
-                    .then(blob => {
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = `workOrder${batch.batch_id}.pdf`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
             }
         }
         setConfirmationMessage(`Order: ${order} was created successfully`);

@@ -231,26 +231,31 @@ function ManageBatch({ batchNumber, sensorList, setSensorList, calibrationProced
     const handleSensorConfirm = () => {
         const sensorId = parseInt(sensor.split(':')[0])
         if (sensorList.filter(sensorObject => sensorObject.sensor_id === sensorId).length > 0) {
-            callApi('remove-sensor-from-batch', {sensor_id: sensorId})
-            .then(response => {
-                setPopupMessage(response.Result);
-                setSensorList(sensorList.filter(sensorObject => sensorObject.sensor_id !== sensorId));
-            })
-        } else {
-            callApi('create-sensor', {sensor_id: sensorId, check_digit: sensor.split(':')[1], batch_id: batchNumber})
-            .then(response => {
-                if (response[0].sensor_id !== sensorId) {
+            callApi('remove-sensor-from-batch', { sensor_id: sensorId })
+                .then(response => {
                     setPopupMessage(response.Result);
-                    return;
-                }
-                callApi('get-sensors', { 'batch_id': batchNumber })
-                    .then(data => {
-                        setSensorList(data);
-                        setPopupMessage(`Sensor ${sensorId} added to batch ${batchNumber}`);
-                    })
-            })
+                    setSensorList(sensorList.filter(sensorObject => sensorObject.sensor_id !== sensorId));
+                })
+        } else {
+            callApi('create-sensor', { sensor_id: sensorId, check_digit: sensor.split(':')[1], batch_id: batchNumber })
+                .then(response => {
+                    if (response[0].sensor_id !== sensorId) {
+                        setPopupMessage(response.Result);
+                        return;
+                    }
+                    callApi('get-sensors', { 'batch_id': batchNumber })
+                        .then(data => {
+                            setSensorList(data);
+                            setPopupMessage(`Sensor ${sensorId} added to batch ${batchNumber}`);
+                        })
+                })
         }
         setSensor('')
+    }
+
+    const printWorkOrder = () => {
+        callApi('generate-work-order', { batch_id: batchNumber, print: true })
+        .then(setPopupMessage(`Batch ${batchNumber} work order printed`))
     }
 
     return (
@@ -260,13 +265,14 @@ function ManageBatch({ batchNumber, sensorList, setSensorList, calibrationProced
                 <div className={styles.grid_menu}>
                     <h1 className={styles.title}>{'Batch: ' + batchNumber + (currentLocation ? ` | Current location: ${currentLocation}` : ` | No location set`)}</h1>
                     <button className={styles.default_button} onClick={() => navigate('/batchEntry')}>Change batch</button>
-                    <button className={styles.default_button} onClick={downloadWorkOrder}>Download work order</button>
                     <form onSubmit={handleLocationSubmit}>
                         <input type='text' value={location} onChange={handleLocationChange} className={styles.default_text_box} placeholder={'Location'} />
                     </form>
+                    <button className={styles.default_button} onClick={downloadWorkOrder}>Download work order</button>
                     <form onSubmit={handleHeartBeatSubmit}>
                         <input type='text' value={heartbeat} onChange={handleHeartBeatChange} className={styles.default_text_box} placeholder={'Heartbeat'} />
                     </form>
+                    <button className={styles.default_button} onClick={printWorkOrder}>Print work order</button>
                     <form onSubmit={handleSensorSubmit}>
                         <input type='text' value={sensor} onChange={handleSensorChange} className={styles.default_text_box} placeholder={'Add/remove sensor'} />
                     </form>

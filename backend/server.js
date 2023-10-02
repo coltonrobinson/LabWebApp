@@ -7,7 +7,8 @@ const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const fs = require('fs');
 const QRCode = require('qrcode');
 const fetch = require('node-fetch');
-require('dotenv').config()
+const { finished } = require('stream');
+require('dotenv').config();
 
 const azureConnectionString = process.env.AZURE_CONNECTION_STRING;
 const monnitSecretKey = process.env.IMONNIT_API_SECRET_KEY_ID;
@@ -900,21 +901,6 @@ app.get('/api/print-certificate-labels', async (req, res) => {
 });
 
 
-app.get('/api/print-certificates', async (req, res) => {
-    const certificateList = req.query.certificate_list
-
-    let url = `http://192.168.1.79:8000/print-certificates/`;
-
-    fetch(`${url}?certificate_list=${certificateList}`)
-        .then(response => {
-            res.json({ 'Result': response })
-        })
-        .catch(error => {
-            res.json({ 'Result': `Failed: ${error}` })
-        })
-});
-
-
 app.get('/api/create-certificate', (req, res) => {
     const certificateJson = req.query.certificate_json;
     const sensorId = req.query.sensor_id;
@@ -1041,6 +1027,7 @@ app.get('/api/print-pdf', (req, res) => {
 app.get('/api/generate-certificate', async (req, res) => {
     const certificateId = req.query.certificate_id;
     const upload = req.query.upload;
+    const print = req.query.print;
 
     pool.query("SELECT * FROM api_certificate WHERE certificate_id = $1", [certificateId], async (err, result) => {
         if (err) {
@@ -1061,24 +1048,9 @@ app.get('/api/generate-certificate', async (req, res) => {
                         res.status(500).json({ error: "Error uploading PDF" })
                     });
             }
-            const localFilePath = `MNT-${certificate.certificate_id}.pdf`;
-            fs.writeFileSync(localFilePath, bytes);
-            const flaskApiUrl = 'http://192.168.1.79:8000/print-pdf/';
-            const formData = {
-                certificateBytes: {
-                    value: fs.createReadStream(`MNT-${certificate.certificate_id}.pdf`),
-                    options: {
-                        filename: `MNT-${certificate.certificate_id}.pdf`
-                    }
-                },
-                certificateId: certificateId
-            };
-            request.post({ url: flaskApiUrl, formData: formData }, (error, response, body) => {
-                if (error) {
-                    console.error("Error sending PDF to Flask API:", error);
-                    res.status(500).json({ error: "Error sending PDF to Flask API" });
-                }
-            })
+            if (print) {
+                printPdf(bytes);
+            }
             res.setHeader("Content-Disposition", `attachment; filename=MNT-${certificateId}.pdf`);
             res.setHeader("Content-Type", "application/json; charset=utf-8");
             res.end(Buffer.from(bytes));
@@ -1092,6 +1064,7 @@ app.get('/api/generate-certificate', async (req, res) => {
 
 app.get('/api/generate-return-record', async (req, res) => {
     const orderId = req.query.order_id;
+    const print = req.query.print;
     const today = new Date()
     const hours = String(today.getHours()).padStart(2, '0');
     const minutes = String(today.getMinutes()).padStart(2, '0');
@@ -1150,6 +1123,10 @@ app.get('/api/generate-return-record', async (req, res) => {
                 const data = result.rows;
 
                 const finishedFormBytes = await addSensorsToReturnRecord(bytes, data)
+
+                if (print) {
+                    printPdf(finishedFormBytes);
+                }
                 res.setHeader("Content-Disposition", `attachment; filename=returnRecord${orderId}.pdf`);
                 res.setHeader("Content-Type", "application/json; charset=utf-8");
                 res.end(Buffer.from(finishedFormBytes));
@@ -1161,6 +1138,7 @@ app.get('/api/generate-return-record', async (req, res) => {
 
 app.get('/api/generate-work-order', async (req, res) => {
     const batchId = req.query.batch_id;
+    const print = req.query.print;
     const today = new Date()
     const hours = String(today.getHours()).padStart(2, '0');
     const minutes = String(today.getMinutes()).padStart(2, '0');
@@ -1218,6 +1196,9 @@ app.get('/api/generate-work-order', async (req, res) => {
 
             const finishedPdf = await pdfDoc.save();
 
+            if (print) {
+                printPdf(finishedPdf);
+            }
             res.setHeader("Content-Disposition", `attachment; filename=workOrder${batchId}.pdf`);
             res.setHeader("Content-Type", "application/json; charset=utf-8");
             res.end(Buffer.from(finishedPdf));
@@ -1308,6 +1289,12 @@ async function uploadPdfToAzure(pdfBytes, fileName) {
     await blockBlobClient.uploadData(pdfBytes, {
         blobHTTPHeaders: { blobContentType: "application/pdf" },
     });
+}
+
+async function printPdf(pdfBytes) {
+    request.post('http://192.168.1.79:8000/print-pdf/', {
+        body: pdfBytes,
+    })
 }
 
 async function addSensorsToReturnRecord(bytes, sensorList) {

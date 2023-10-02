@@ -14,6 +14,7 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
   const [certificatesPrinted, setCertificatesPrinted] = useState(false);
   const [certificatesDownloaded, setCertificatesDownloaded] = useState(false);
   const [returnRecordGenerated, setreturnRecordGenerated] = useState(false);
+  const [returnRecordPrinted, setreturnRecordPrinted] = useState(false);
   const [confirmationArray, setConfirmationArray] = useState(false);
   const certificateList = useRef([])
 
@@ -585,14 +586,21 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
       setPopupMessage(`There are no certificates to print`)
     }
 
-      try {
-        await callApi('print-certificates', {certificate_list: certificateList.current.map(certificate => certificate.certificate_id)})
-      } catch (error) {
-        console.error(error)
-        setPopupMessage('Unable to print certificates');
-        return;
+    try {
+      for (const certificate of certificateList.current) {
+        await callApi('generate-certificate', { certificate_id: certificate.certificate_id, upload: true, print: true })
       }
-      setCertificatesPrinted(true)
+    } catch (error) {
+      console.error(error)
+      setPopupMessage('Unable to print certificates');
+      return;
+    }
+    setCertificatesPrinted(true)
+  }
+
+  const printReturnRecord = () => {
+    callApi('generate-return-record', { order_id: orderNumber, print: true })
+    setreturnRecordPrinted(true);
   }
 
   const createReturnRecord = () => {
@@ -663,8 +671,8 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
     if (!certificatesDownloaded && !certificatesPrinted) {
       confirmationArray.push(`The certificates for this order have not been downloaded or printed`);
     }
-    if (!returnRecordGenerated) {
-      confirmationArray.push(`The return record for this order has not been downloaded`)
+    if (!returnRecordGenerated && !returnRecordPrinted) {
+      confirmationArray.push(`The return record for this order has not been downloaded or printed`)
     }
     setConfirmationArray(confirmationArray);
   }
@@ -692,6 +700,8 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
         {certificatesPrinted ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates printed</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates printed</span>}
         <button className={styles.default_button_half} onClick={downloadCertificates}>Download certificates</button>
         {certificatesDownloaded ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates downloaded</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
+        <button className={styles.default_button_half} onClick={printReturnRecord}>Print return record</button>
+        {returnRecordPrinted ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record printed</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not printed</span>}
         <button className={styles.default_button_half} onClick={createReturnRecord}>Download return record</button>
         {returnRecordGenerated ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record downloaded</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
         <button className={styles.default_button} onClick={handleCloseOrder}>Close Order</button>
