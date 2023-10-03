@@ -9,6 +9,7 @@ function MainMenu() {
             <button className={styles.default_button} onClick={() => navigate('/receiving')}>Receiving</button>
             <button className={styles.default_button} onClick={() => navigate('/batchEntry')}>Manage</button>
             <button className={styles.default_button} onClick={() => navigate('/orderEntry')}>Shipping</button>
+            <button className={styles.default_button} onClick={() => navigate('/shipSensors')}>Boxed sensors</button>
             <br /><br /><br />
             <button className={styles.default_button} onClick={() => navigate('/labView')}>Lab View</button>
             <button className={styles.default_button} onClick={() => navigate('/metrics')}>Metrics</button>

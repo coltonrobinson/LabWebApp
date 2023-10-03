@@ -281,6 +281,46 @@ app.get('/api/get-orders-to-ship', (req, res) => {
     });
 });
 
+
+app.get('/api/get-orders-boxed', (req, res) => {
+    pool.query(`SELECT api_order.*, sensor_id FROM api_order
+                INNER JOIN api_batch
+                ON api_order.order_id = api_batch.order_id
+                INNER JOIN api_sensor
+                ON api_sensor.batch_id = api_batch.batch_id
+                WHERE api_order.shipped = false`, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: `Error executing query: ${err}` });
+        }
+        const orders = result.rows;
+        const orderNumbers = new Set(orders.map(order => order.order_id))
+        const parsedOrders = []
+        for (const orderNumber of orderNumbers) {
+            const sensorList = orders.filter(order => order.order_id === orderNumber);
+            sensorList[0].sensors = sensorList.length;
+            delete sensorList[0].sensor_id;
+            parsedOrders.push(sensorList[0]);
+        }
+        res.json(parsedOrders);
+    });
+});
+
+
+app.get('/api/set-order-shipped', (req, res) => {
+    const orderId = req.query.order_id;
+    const name = req.query.name;
+    const timestamp = new Date().toISOString()
+
+    pool.query('UPDATE api_order SET shipped = true, shipped_timestamp = $1, courier = $2 WHERE order_id = $3 RETURNING *', [timestamp, name, orderId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: `Error executing query: ${err}` });
+        }
+        const order = result.rows;
+        res.json(order[0]);
+    })
+});
+
+
 app.get('/api/get-batch-by-id', (req, res) => {
     const batchId = req.query.batch_id;
 
@@ -908,7 +948,7 @@ app.get('/api/create-certificate', (req, res) => {
     const dueDate = req.query.due_date;
     const calibrationDate = req.query.calibration_date;
 
-    pool.query("INSERT INTO api_certificate (generate_certificate_json, template) values ($1, $2) RETURNING *", [certificateJson, template], (err, result) => {
+    pool.query("INSERT INTO api_certificate (generate_certificate_json, template, sensor_id) values ($1, $2, $3) RETURNING *", [certificateJson, template, sensorId], (err, result) => {
         if (err) {
             return res.status(500).json({ error: `Error executing query: ${err}` });
         }
@@ -957,7 +997,7 @@ app.get('/api/log-batch-interaction', (req, res) => {
     const technicianId = req.query.technician_id;
     const batchId = req.query.batch_id;
 
-    const timestamp = new Date();
+    const timestamp = new Date().toISOString();
     const status = (start === 'true' || start === true) ? 'start' : 'end';
     const column1 = `${department}_${status}`;
     const column2 = `${department}_${status}_technician_id`;
@@ -1065,7 +1105,7 @@ app.get('/api/generate-certificate', async (req, res) => {
 app.get('/api/generate-return-record', async (req, res) => {
     const orderId = req.query.order_id;
     const print = req.query.print;
-    const today = new Date()
+    const today = new Date().toISOString()
     const hours = String(today.getHours()).padStart(2, '0');
     const minutes = String(today.getMinutes()).padStart(2, '0');
     const seconds = String(today.getSeconds()).padStart(2, '0');
@@ -1139,7 +1179,7 @@ app.get('/api/generate-return-record', async (req, res) => {
 app.get('/api/generate-work-order', async (req, res) => {
     const batchId = req.query.batch_id;
     const print = req.query.print;
-    const today = new Date()
+    const today = new Date().toISOString()
     const hours = String(today.getHours()).padStart(2, '0');
     const minutes = String(today.getMinutes()).padStart(2, '0');
     const seconds = String(today.getSeconds()).padStart(2, '0');

@@ -68,6 +68,7 @@
 }
 
 .batch_button {
+    border: #333 2px solid;
     text-align: center;
     border-radius: 5px;
     padding: 5px;
@@ -615,20 +616,18 @@
 }
 
 .rainbow {
-    background: linear-gradient(
-        90deg,
-        rgba(255, 0, 0, 1) 0%,
-        rgba(255, 154, 0, 1) 10%,
-        rgba(208, 222, 33, 1) 20%,
-        rgba(79, 220, 74, 1) 30%,
-        rgba(63, 218, 216, 1) 40%,
-        rgba(47, 201, 226, 1) 50%,
-        rgba(28, 127, 238, 1) 60%,
-        rgba(95, 21, 242, 1) 70%,
-        rgba(186, 12, 248, 1) 80%,
-        rgba(251, 7, 217, 1) 90%,
-        rgba(255, 0, 0, 1) 100%
-    );
+    background: linear-gradient(90deg,
+            rgba(255, 0, 0, 1) 0%,
+            rgba(255, 154, 0, 1) 10%,
+            rgba(208, 222, 33, 1) 20%,
+            rgba(79, 220, 74, 1) 30%,
+            rgba(63, 218, 216, 1) 40%,
+            rgba(47, 201, 226, 1) 50%,
+            rgba(28, 127, 238, 1) 60%,
+            rgba(95, 21, 242, 1) 70%,
+            rgba(186, 12, 248, 1) 80%,
+            rgba(251, 7, 217, 1) 90%,
+            rgba(255, 0, 0, 1) 100%);
 }
 
 .rainbowApp {
@@ -639,20 +638,18 @@
     bottom: 0;
     font-family: Arial, sans-serif;
     margin: 0;
-    background: linear-gradient(
-        90deg,
-        rgba(255, 0, 0, 1) 0%,
-        rgba(255, 154, 0, 1) 10%,
-        rgba(208, 222, 33, 1) 20%,
-        rgba(79, 220, 74, 1) 30%,
-        rgba(63, 218, 216, 1) 40%,
-        rgba(47, 201, 226, 1) 50%,
-        rgba(28, 127, 238, 1) 60%,
-        rgba(95, 21, 242, 1) 70%,
-        rgba(186, 12, 248, 1) 80%,
-        rgba(251, 7, 217, 1) 90%,
-        rgba(255, 0, 0, 1) 100%
-    );
+    background: linear-gradient(90deg,
+            rgba(255, 0, 0, 1) 0%,
+            rgba(255, 154, 0, 1) 10%,
+            rgba(208, 222, 33, 1) 20%,
+            rgba(79, 220, 74, 1) 30%,
+            rgba(63, 218, 216, 1) 40%,
+            rgba(47, 201, 226, 1) 50%,
+            rgba(28, 127, 238, 1) 60%,
+            rgba(95, 21, 242, 1) 70%,
+            rgba(186, 12, 248, 1) 80%,
+            rgba(251, 7, 217, 1) 90%,
+            rgba(255, 0, 0, 1) 100%);
 }
 
 .graph {
@@ -664,4 +661,48 @@
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 10px;
     margin: 20px;
+}
+
+.check_box_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    margin: 20px;
+}
+
+.check_box_container {
+    position: relative;
+    cursor: pointer;
+    margin: 10px;
+    text-align: left;
+}
+
+.grid_check_box {
+    height: 25px;
+    width: 25px;
+    cursor: pointer;
+    background-color: #f2f2f2;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translate(-100%, -50%);
+    transform: translate(-100%, -50%);
+}
+
+.check_box_container:hover input~.grid_check_box {
+    background-color: #333;
+}
+
+.check_box_container input:checked~.grid_check_box {
+    background-color: #08afe6;
+}
+
+.grid_check_box:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.check_box_container input:checked~.grid_check_box:after {
+    display: block;
 }

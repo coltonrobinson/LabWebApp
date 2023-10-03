@@ -21,6 +21,7 @@ import Navbar from './components/Navbar/Navbar.js';
 import OrderEntry from './components/OrderEntry/OrderEntry';
 import Metrics from './components/Metrics/Metrics';
 import SignInMenu from './components/SignInMenu/SignInMenu';
+import ShipSensors from './components/ShipSensors/shipSensors';
 
 let banner;
 
@@ -66,6 +67,7 @@ function App() {
           <Route path='/shipping' element={<Shipping setConfirmationMessage={setConfirmationMessage} technicianId={technicianId} setPopupMessage={setPopupMessage} orderNumber={orderNumber} batches={batches} />} />
           <Route path='/confirmation' element={<ConfirmationScreen confirmationMessage={confirmationMessage} />} />
           <Route path='/locationEntry' element={<LocationEntry batchNumber={batchNumber} setPopupMessage={setPopupMessage} technicianId={technicianId} />} />
+          <Route path='/shipSensors' element={<ShipSensors setPopupMessage={setPopupMessage} />} />
           <Route path='/signIn' element={<SignInMenu />} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
