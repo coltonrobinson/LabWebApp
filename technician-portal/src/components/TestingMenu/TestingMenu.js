@@ -272,6 +272,13 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                 }
                 if (calibrate) {
                     callApi('calibrate-sensor', { 'sensor_id': sensor.sensor_id, 'current_reading': parameters.sensor_reading, 'target_reading': parameters.reference_reading })
+                    .then(response => {
+                       if (response.Result !== 'Success') {
+                        setPopupMessage(`Could not calibrate sensor ${sensor.sensor_id}, please try again`)
+                        console.error(response)
+                        return;
+                       }
+                    })
                 }
                 callApi('create-reading', parameters)
                     .then(() => {

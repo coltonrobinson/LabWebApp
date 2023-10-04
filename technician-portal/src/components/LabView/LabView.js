@@ -4,7 +4,7 @@ import styles from "../../styles/styles.module.css";
 import Equipment from "../Equipment/Equipment";
 
 function LabView() {
-    const [aggregatorStatusDotStyle, setAggregatorStatusDotStyle] = useState(styles.status_dot_green);
+    const [aggregatorStatusDotStyle, setAggregatorStatusDotStyle] = useState(styles.status_dot_red);
     const [referenceList, setReferenceList] = useState([]);
     const [labReadings, setLabReadings] = useState(null);
     const [equipmentList, setEquipmentList] = useState([])
