@@ -1,16 +1,21 @@
-import callApi from "../../utils/api/callApi";
-import styles from "../../styles/styles.module.css";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function ShipSensors({ setPopupMessage }) {
+import { useAppContext } from "../../contexts/app";
+import callApi from "../../utils/api/callApi";
+
+import styles from "../../styles/styles.module.css";
+
+function ShipSensors() {
+    const navigate = useNavigate();
     const updated = useRef(false);
     const loading = useRef(true);
+    const { setPopupMessage } = useAppContext()
+
     const [orders, setOrders] = useState(<></>)
     const [ordersSelected, setOrdersSelected] = useState([]);
     const [name, setName] = useState('');
     const checkAll = useRef(false);
-    const navigate = useNavigate();
 
     const handleCheck = (event) => {
         const value = parseInt(event.target.value);
@@ -34,7 +39,7 @@ function ShipSensors({ setPopupMessage }) {
             return;
         }
         for (const order of ordersSelected) {
-            callApi('set-order-shipped', {order_id: order, name: name})
+            callApi('set-order-shipped', { order_id: order, name: name })
         }
         updated.current = false;
         setPopupMessage(`Order(s) ${ordersSelected.join(', ')} marked as shipped`);

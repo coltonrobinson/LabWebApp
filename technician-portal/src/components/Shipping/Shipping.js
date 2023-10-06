@@ -1,14 +1,26 @@
-import styles from "../../styles/styles.module.css";
-import callApi from "../../utils/api/callApi";
-import parseDataBaseDate from "../../utils/parseDataBaseDate";
-import ip from "../../utils/ip/ip";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+
+import callApi from "../../utils/api/callApi";
+import ip from "../../utils/ip/ip";
+import parseDataBaseDate from "../../utils/parseDataBaseDate";
 import ConfirmationPopup from "../ConfirmationPopup/ConfirmationPopup";
+
+import { useAppContext } from "../../contexts/app";
+
+import styles from "../../styles/styles.module.css";
 
 const { addMonths } = require('date-fns');
 
-function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, orderNumber, batches }) {
+function Shipping() {
+  const navigate = useNavigate()
+  const certificateList = useRef([])
+
+  const {
+    setConfirmationMessage, technicianId, setPopupMessage,
+    orderNumber, batches
+  } = useAppContext()
+
   const [certificatesGeneratedDate, setCertificatesGeneratedDate] = useState(null);
   const [labelsPrinted, setLabelsPrinted] = useState(false);
   const [certificatesPrinted, setCertificatesPrinted] = useState(false);
@@ -16,11 +28,7 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
   const [returnRecordGenerated, setreturnRecordGenerated] = useState(false);
   const [returnRecordPrinted, setreturnRecordPrinted] = useState(false);
   const [confirmationArray, setConfirmationArray] = useState(false);
-  const certificateList = useRef([])
 
-
-
-  let navigate = useNavigate()
   const promises = [];
 
   const getCertificates = () => {
@@ -39,11 +47,18 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
     getCertificates();
   })
 
-  const generateCertificates = async (event) => {
+  const generateCertificates = async () => {
     try {
       for (const batch of batches) {
-        promises.push(callApi('update-batch-technician', { department: 'shipping', technician_id: technicianId, 'batch_id': batch.batch_id }));
-        promises.push(callApi('set-batch-active-state', { batch_id: batch.batch_id, active_state: false }));
+        promises.push(callApi('update-batch-technician', {
+          department: 'shipping',
+          technician_id: technicianId,
+          'batch_id': batch.batch_id
+        }));
+        promises.push(callApi('set-batch-active-state', {
+          batch_id: batch.batch_id,
+          active_state: false
+        }));
       }
 
       await Promise.all(promises);
@@ -55,7 +70,6 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
       console.error(error);
     }
   };
-
 
   const createCertificates = async () => {
     const promises = [];
@@ -588,7 +602,11 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
 
     try {
       for (const certificate of certificateList.current) {
-        await callApi('generate-certificate', { certificate_id: certificate.certificate_id, upload: true, print: true })
+        await callApi('generate-certificate', {
+          certificate_id: certificate.certificate_id,
+          upload: true,
+          print: true
+        })
       }
     } catch (error) {
       console.error(error)
@@ -679,10 +697,17 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
 
   const endShipping = () => {
     callApi('set-order-active-state', { order_id: orderNumber, active_state: false });
+
     for (const batch of batches) {
       callApi('remove-batch-location', { batch_id: batch.batch_id });
-      callApi('log-batch-interaction', { department: 'shipping', start: false, technician_id: technicianId, batch_id: batch.batch_id });
+      callApi('log-batch-interaction', {
+        department: 'shipping',
+        start: false,
+        technician_id: technicianId,
+        batch_id: batch.batch_id
+      });
     }
+
     setConfirmationMessage(`Order: ${orderNumber} closed`);
     navigate('/confirmation');
   }
@@ -690,23 +715,50 @@ function Shipping({ setConfirmationMessage, technicianId, setPopupMessage, order
   return (
     <>
       <div className={styles.menu}>
-        {confirmationArray.length > 0 ? <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={endShipping} /> : <></>}
+        {confirmationArray.length && <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={endShipping} />}
+
         <h1 className={styles.title}>Order: {orderNumber}</h1>
+        
         <button className={styles.default_button_half} onClick={generateCertificates}>Create certificates</button>
-        {certificatesGeneratedDate ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates generated on {certificatesGeneratedDate}</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates</span>}
+        {certificatesGeneratedDate
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates generated on {certificatesGeneratedDate}</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates</span>}
+
         <button className={styles.default_button_half} onClick={printCertificateLabels}>Print labels</button>
-        {labelsPrinted ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Labels printed</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No labels printed</span>}
+        {labelsPrinted
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Labels printed</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No labels printed</span>}
+
         <button className={styles.default_button_half} onClick={printCertificates}>Print certificates</button>
-        {certificatesPrinted ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates printed</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates printed</span>}
+        {certificatesPrinted
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates printed</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates printed</span>}
+
         <button className={styles.default_button_half} onClick={downloadCertificates}>Download certificates</button>
-        {certificatesDownloaded ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates downloaded</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
+        {certificatesDownloaded
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates downloaded</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
+
         <button className={styles.default_button_half} onClick={printReturnRecord}>Print return record</button>
-        {returnRecordPrinted ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record printed</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not printed</span>}
+        {returnRecordPrinted
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record printed</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not printed</span>}
+
         <button className={styles.default_button_half} onClick={createReturnRecord}>Download return record</button>
-        {returnRecordGenerated ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record downloaded</span> : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
+        {returnRecordGenerated
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record downloaded</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
+
         <button className={styles.default_button} onClick={handleCloseOrder}>Close Order</button>
+
         <div className={styles.batches_container}>
-          {batches.length > 0 ? batches.map(batch => <div className={styles.shipping_batches}>{batch.current_location ? `Batch ${batch.batch_id} | Current location: ${batch.current_location}` : `Batch ${batch.batch_id} (Shipped)`}</div>) : <></>}
+          {batches.length && batches.map(batch =>
+            <div className={styles.shipping_batches}>
+              {batch.current_location
+                ? `Batch ${batch.batch_id} | Current location: ${batch.current_location}`
+                : `Batch ${batch.batch_id} (Shipped)`}
+            </div>
+          )}
         </div>
       </div>
     </>

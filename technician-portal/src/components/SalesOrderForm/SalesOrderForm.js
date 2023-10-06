@@ -1,18 +1,25 @@
-import { useState, useEffect } from "react";
-import styles from "../../styles/styles.module.css";
-import callApi from "../../utils/api/callApi";
-import DropDown from "../DropDown/DropDown";
-import AddBatchMenu from "../AddBatchMenu/AddBatchMenu";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function SalesOrderForm({ salesOrder, technicianId, setConfirmationMessage, setPopupMessage, order }) {
-    let navigate = useNavigate();
+import { useAppContext } from "../../contexts/app";
+
+import callApi from "../../utils/api/callApi";
+import AddBatchMenu from "../AddBatchMenu/AddBatchMenu";
+import DropDown from "../DropDown/DropDown";
+
+import styles from "../../styles/styles.module.css";
+
+function SalesOrderForm() {
+    const navigate = useNavigate();
+    const {
+        salesOrder, technicianId, setConfirmationMessage,
+        setPopupMessage, order
+    } = useAppContext()
+
     const [batches, setBatches] = useState([]);
     const [calibrationProcedures, setCalibrationProcedures] = useState([])
     const [selectedOption, setSelectedOption] = useState('');
     const [batchDisplay, setBatchDisplay] = useState(null);
-
-
 
     useEffect(() => {
         callApi('get-calibration-procedures')
@@ -21,7 +28,13 @@ function SalesOrderForm({ salesOrder, technicianId, setConfirmationMessage, setP
             })
         if (batches.length > 0) {
             setBatchDisplay(batches.map((batch, index) => (
-                <AddBatchMenu key={index} technicianId={technicianId} calibrationProcedureId={batch.calibration_procedure_id} batchNumber={batch.batch_id} setPopupMessage={setPopupMessage} batches={batches} setBatches={setBatches} />
+                <AddBatchMenu
+                    key={index}
+                    calibrationProcedureId={batch.calibration_procedure_id}
+                    batchNumber={batch.batch_id}
+                    batches={batches}
+                    setBatches={setBatches}
+                />
             )))
         } else {
             setBatchDisplay(null);
@@ -32,7 +45,12 @@ function SalesOrderForm({ salesOrder, technicianId, setConfirmationMessage, setP
         event.preventDefault();
         for (const batch of batches) {
             if (batch.batch_id) {
-                callApi('log-batch-interaction', { department: 'receiving', start: false, technician_id: technicianId, batch_id: batch.batch_id })
+                callApi('log-batch-interaction', {
+                    department: 'receiving',
+                    start: false,
+                    technician_id: technicianId,
+                    batch_id: batch.batch_id
+                })
                     .catch(error => {
                         console.error(error);
                     })
@@ -61,7 +79,14 @@ function SalesOrderForm({ salesOrder, technicianId, setConfirmationMessage, setP
                         <input type='text' className={styles.customer_info_text_box} placeholder={'Phone Number'} defaultValue={'801-561-5555'} />
                         <input type='text' className={styles.customer_info_text_box} placeholder={'Email Address'} defaultValue={'sarahl@monnit.com'} />
                     </div>
-                    <DropDown options={calibrationProcedures} selectedOption={selectedOption} setSelectedOption={setSelectedOption} batches={batches} setBatches={setBatches} technicianId={technicianId} order={order} setPopupMessage={setPopupMessage} />
+                    <DropDown
+                        options={calibrationProcedures}
+                        selectedOption={selectedOption}
+                        setSelectedOption={setSelectedOption}
+                        batches={batches}
+                        setBatches={setBatches}
+                        order={order}
+                    />
                     {batchDisplay}
                     <button onClick={handleSubmit} className={styles.default_button}>Complete Sales Order</button>
                 </div>

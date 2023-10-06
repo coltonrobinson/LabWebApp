@@ -1,10 +1,18 @@
-import { useState, useEffect } from "react";
-import styles from "../../styles/styles.module.css";
-import callApi from "../../utils/api/callApi";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, technicianId, setPopupMessage, sensorGrid, setSensorGrid }) {
-    let navigate = useNavigate();
+import { useAppContext } from "../../contexts/app";
+import callApi from "../../utils/api/callApi";
+
+import styles from "../../styles/styles.module.css";
+
+function BatchEntry() {
+    const navigate = useNavigate();
+    const {
+        batchNumber, setBatchNumber, setSensorList, setProcedureId,
+        technicianId, setPopupMessage, sensorGrid, setSensorGrid
+    } = useAppContext()
+
     const [batches, setBatches] = useState([<h1 className={styles.title}>Loading...</h1>]);
 
     useEffect(() => {
@@ -21,7 +29,7 @@ function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, t
                 setProcedureId(batch.calibration_procedure_id);
                 callApi('get-sensors', { 'batch_id': batch.batch_id })
                     .then(data => {
-                        setSensors(data);
+                        setSensorList(data);
                     })
                 navigate('/manageBatch');
             } else {
@@ -46,25 +54,25 @@ function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, t
                         const batches = [...new Set(response.filter(batch => batch.order_id === order))].sort((a, b) => b - a);
                         batchList.push(
                             <>
-                            <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
-                            {batches.map(batch => {
-                                return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} />
-                            })}
-                            <hr />
+                                <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
+                                {batches.map(batch => {
+                                    return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} />
+                                })}
+                                <hr />
                             </>
                         )
                     }
 
-                        if (isMounted) {
-                            setBatches(batchList);
-                        }
+                    if (isMounted) {
+                        setBatches(batchList);
+                    }
                 });
         }
 
         return () => {
             isMounted = false;
         };
-    }, [setBatchNumber, setSensors, setProcedureId, navigate, technicianId, setPopupMessage, batches.length, sensorGrid.length, setSensorGrid]);
+    }, [setBatchNumber, setSensorList, setProcedureId, navigate, technicianId, setPopupMessage, batches.length, sensorGrid.length, setSensorGrid]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -80,7 +88,7 @@ function BatchEntry({ batchNumber, setBatchNumber, setSensors, setProcedureId, t
                         setProcedureId(batch.calibration_procedure_id);
                         callApi('get-sensors', { 'batch_id': batchNumber })
                             .then(data => {
-                                setSensors(data);
+                                setSensorList(data);
                             })
                         navigate('/manageBatch');
                     } else {
