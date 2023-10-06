@@ -1,11 +1,19 @@
-import styles from "../../styles/styles.module.css";
-import callApi from "../../utils/api/callApi";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-function OrderEntry({ orderNumber, setOrderNumber, technicianId, setPopupMessage, setBatches }) {
-    const [activeOrders, setActiveOrders] = useState(null)
+import { useAppContext } from "../../contexts/app";
+import callApi from "../../utils/api/callApi";
+
+import styles from "../../styles/styles.module.css";
+
+function OrderEntry() {
     const navigate = useNavigate();
+    const {
+        orderNumber, setOrderNumber,
+        technicianId, setPopupMessage, setBatches
+    } = useAppContext()
+    const [activeOrders, setActiveOrders] = useState(null)
+
 
     useEffect(() => {
         const handleClick = (orderId) => {
@@ -18,7 +26,12 @@ function OrderEntry({ orderNumber, setOrderNumber, technicianId, setPopupMessage
                 .then(batches => {
                     setBatches(batches);
                     for (const batch of batches) {
-                        callApi('log-batch-interaction', { department: 'shipping', start: true, technician_id: technicianId, batch_id: batch.batch_id })
+                        callApi('log-batch-interaction', {
+                            department: 'shipping',
+                            start: true,
+                            technician_id: technicianId,
+                            batch_id: batch.batch_id
+                        })
                     }
                 })
             navigate('/shipping')
@@ -55,7 +68,12 @@ function OrderEntry({ orderNumber, setOrderNumber, technicianId, setPopupMessage
                         .then(batches => {
                             setBatches(batches);
                             for (const batch of batches) {
-                                callApi('log-batch-interaction', { department: 'shipping', start: true, technician_id: technicianId, batch_id: batch.batch_id })
+                                callApi('log-batch-interaction', {
+                                    department: 'shipping',
+                                    start: true,
+                                    technician_id: technicianId,
+                                    batch_id: batch.batch_id
+                                })
                             }
                         })
                     navigate('/shipping')

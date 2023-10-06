@@ -1,12 +1,20 @@
 import { useNavigate } from "react-router-dom";
-import styles from "../../styles/styles.module.css";
+
+import { useAppContext } from "../../contexts/app";
 import callApi from "../../utils/api/callApi";
 
-function Receiving({ salesOrder, setSalesOrder, setOrder }) {
+import styles from "../../styles/styles.module.css";
+
+function Receiving() {
     const navigate = useNavigate();
+    const { salesOrder, setSalesOrder, setOrder } = useAppContext()
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        callApi('create-order', { 'customer_id': 1, 'customer_order_number': salesOrder })
+        callApi('create-order', {
+            'customer_id': 1,
+            'customer_order_number': salesOrder
+        })
             .then(response => {
                 const tempOrder = response[0]['order_id'];
                 setOrder(tempOrder);

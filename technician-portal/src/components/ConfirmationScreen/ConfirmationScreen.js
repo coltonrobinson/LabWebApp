@@ -1,8 +1,12 @@
-import styles from "../../styles/styles.module.css";
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../../contexts/app";
 
-function ConfirmationScreen({ confirmationMessage }) {
-    let navigate = useNavigate()
+import styles from "../../styles/styles.module.css";
+
+function ConfirmationScreen() {
+    const navigate = useNavigate()
+    const { confirmationMessage } = useAppContext()
+
     return (
         <div className={styles.menu}>
             <h1 className={styles.title}>{confirmationMessage}</h1>

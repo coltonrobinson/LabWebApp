@@ -1,14 +1,18 @@
+import { useAppContext } from "../../contexts/app";
 import callApi from "../../utils/api/callApi";
+
 import styles from "../../styles/styles.module.css";
 
-const DropDown = ({ options, selectedOption, setSelectedOption, batches, setBatches, technicianId, order, setPopupMessage }) => {
+const DropDown = ({ options, selectedOption, setSelectedOption, batches, setBatches, order }) => {
+    const { technicianId, setPopupMessage } = useAppContext()
+
     const createBatch = async (calibration_procedure) => {
         if (!technicianId) {
             setPopupMessage('Please sign in');
         } else {
             callApi('create-batch', { order_id: order, calibration_procedure_id: calibration_procedure, receiving_technician_id: technicianId })
                 .then(response => {
-                    callApi('log-batch-interaction', {department: 'receiving', start: true, technician_id: technicianId, batch_id: response[0].batch_id})
+                    callApi('log-batch-interaction', { department: 'receiving', start: true, technician_id: technicianId, batch_id: response[0].batch_id })
                     setBatches([...batches, response[0]]);
                 })
         }
