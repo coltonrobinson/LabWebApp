@@ -54,7 +54,7 @@ function BatchEntry() {
                         const batches = [...new Set(response.filter(batch => batch.order_id === order))].sort((a, b) => b - a);
                         batchList.push(
                             <>
-                                <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
+                                <h1 key={batches[0].order_id} className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
                                 {batches.map(batch => {
                                     return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} />
                                 })}

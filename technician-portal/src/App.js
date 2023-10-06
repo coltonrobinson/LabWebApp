@@ -65,22 +65,22 @@ function App() {
           <ErrorMessage />
 
           <Routes>
-            <Route path='/' element={MainMenu} />
-            <Route path='/batchEntry' element={BatchEntry} />
-            <Route path='/confirmation' element={ConfirmationScreen} />
-            <Route path='/createSalesOrder' element={SalesOrderForm} />
+            <Route path='/' element={<MainMenu />} />
+            <Route path='/batchEntry' element={<BatchEntry />} />
+            <Route path='/confirmation' element={<ConfirmationScreen />} />
+            <Route path='/createSalesOrder' element={<SalesOrderForm />} />
 
-            <Route path='/labView' element={LabView} />
-            <Route path='/locationEntry' element={LocationEntry} />
-            <Route path='/manageBatch' element={ManageBatch} />
-            <Route path='/metrics' element={Metrics} />
-            <Route path='/orderEntry' element={OrderEntry} />
+            <Route path='/labView' element={<LabView />} />
+            <Route path='/locationEntry' element={<LocationEntry />} />
+            <Route path='/manageBatch' element={<ManageBatch />} />
+            <Route path='/metrics' element={<Metrics />} />
+            <Route path='/orderEntry' element={<OrderEntry />} />
 
-            <Route path='/receiving' element={Receiving} />
-            <Route path='/shipping' element={Shipping} />
-            <Route path='/shipSensors' element={ShipSensors} />
-            <Route path='/signIn' element={SignInMenu} />
-            <Route path='*' element={PageNotFound} />
+            <Route path='/receiving' element={<Receiving />} />
+            <Route path='/shipping' element={<Shipping />} />
+            <Route path='/shipSensors' element={<ShipSensors />} />
+            <Route path='/signIn' element={<SignInMenu />} />
+            <Route path='*' element={<PageNotFound />} />
           </Routes>
         </Router>
       </AppWrapper>
