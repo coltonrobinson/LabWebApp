@@ -3,8 +3,14 @@ import styles from "../../styles/styles.module.css";
 import callApi from "../../utils/api/callApi";
 import round from "../../utils/round.js";
 import StableTimeDisplay from "../StableTimeDisplay/StableTimeDisplay";
+import { useAppContext } from "../../contexts/app";
 
-function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints, setSensorGrid, setReferenceReadings, setPopupMessage }) {
+function TestingMenu({ setPoints }) {
+    const {
+        procedureId: calibrationProcedureId, sensorGrid,
+        sensorList, setSensorGrid, setPopupMessage
+    } = useAppContext()
+
     const [point1StableTime, setPoint1StableTime] = useState('Loading...');
     const [point2StableTime, setPoint2StableTime] = useState('Loading...');
     const [point3StableTime, setPoint3StableTime] = useState('Loading...');

@@ -1,15 +1,20 @@
 import { React, useState } from 'react';
-import styles from '../../styles/styles.module.css';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { useAppContext } from '../../contexts/app';
 import callApi from '../../utils/api/callApi';
-import { useNavigate, useLocation } from 'react-router-dom';
 
+import styles from '../../styles/styles.module.css';
 
-function SignInBox({ setTechnicianId, setPopupMessage, technicianId }) {
+function SignInBox() {
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    const { setTechnicianId, setPopupMessage, technicianId } = useAppContext()
+
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [isSignInBoxDisplayed, setIsSignInBoxDisplayed] = useState(false);
     const [technicianName, setTechnicianName] = useState('');
-    const navigate = useNavigate()
-    const location = useLocation()
 
     let buttonText = isSignedIn ? 'Sign Out' : 'Sign In';
 

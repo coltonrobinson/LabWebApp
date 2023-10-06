@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
-import styles from "../../styles/styles.module.css";
-import addSensor from "../../utils/addSensor";
-import ScannedSensors from "../ScannedSensors/ScannedSensors";
-import callApi from "../../utils/api/callApi";
 
-function AddBatchMenu({ technicianId, calibrationProcedureId, batchNumber, setPopupMessage, batches, setBatches }) {
+import { useAppContext } from "../../contexts/app";
+import addSensor from "../../utils/addSensor";
+import callApi from "../../utils/api/callApi";
+import ScannedSensors from "../ScannedSensors/ScannedSensors";
+
+
+import styles from "../../styles/styles.module.css";
+
+function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches }) {
+    const { setPopupMessage, technicianId } = useAppContext()
+
     const [addedSensors, setAddedSensors] = useState([]);
     const [sensors, setSensors] = useState([]);
     const [sensor, setSensor] = useState('');
