@@ -271,7 +271,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                     'uncertainty': uncertainty,
                 }
                 if (calibrate) {
-                    callApi('calibrate-sensor', { 'sensor_id': sensor.sensor_id, 'current_reading': parameters.sensor_reading, 'target_reading': parameters.reference_reading })
+                    callApi('calibrate-sensor', { 'sensor_id': sensor.sensor_id, 'target_reading': parameters.reference_reading })
                     .then(response => {
                        if (response.Result !== 'Success') {
                         setPopupMessage(`Could not calibrate sensor ${sensor.sensor_id}, please try again`)
@@ -335,7 +335,7 @@ function TestingMenu({ sensorGrid, calibrationProcedureId, sensorList, setPoints
                     'uncertainty': uncertainty,
                 }
                 if (calibrate) {
-                    callApi('calibrate-sensor', { 'sensor_id': sensorId, 'current_reading': parameters.sensor_reading, 'target_reading': parameters.reference_reading })
+                    callApi('calibrate-sensor', { 'sensor_id': sensorId, 'target_reading': parameters.reference_reading })
                 }
                 callApi('create-reading', parameters)
                     .then(() => {

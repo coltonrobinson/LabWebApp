@@ -288,7 +288,7 @@ app.get('/api/get-orders-boxed', (req, res) => {
                 ON api_order.order_id = api_batch.order_id
                 INNER JOIN api_sensor
                 ON api_sensor.batch_id = api_batch.batch_id
-                WHERE api_order.shipped = false`, (err, result) => {
+                WHERE api_order.shipped = false AND api_order.active = false`, (err, result) => {
         if (err) {
             return res.status(500).json({ error: `Error executing query: ${err}` });
         }
@@ -623,7 +623,6 @@ app.get('/api/create-location-log', (req, res) => {
 
 app.get('/api/calibrate-sensor', (req, res) => {
     let sensorId = req.query.sensor_id;
-    let currentReading = req.query.current_reading;
     let targetReading = req.query.target_reading;
     let url = `https://www.imonnit.com/json/SensorGetCalibration/`;
     let parameters = {
@@ -640,13 +639,12 @@ app.get('/api/calibrate-sensor', (req, res) => {
     })
         .then(response => response.json())
         .then(result => {
-            const currentCalibration = result.Result.Calibration1 / 10;
-            const offset = (((targetReading - currentReading) + currentCalibration) * 10).toFixed(0)
             url = `https://www.imonnit.com/json/SensorSetCalibration/`;
-            parameters = {
-                'SensorID': sensorId,
-                'Calibration1': offset,
-            }
+            parameters = result.Result;
+            parameters.Calibration1 = parseInt(targetReading*10);
+            parameters.PushAutoCalibrateCommand = true;
+            parameters.PushProfileConfig1 = false;
+            parameters.PushProfileConfig2 = false;
             const params = new URLSearchParams();
             for (const parameter in parameters) {
                 params.append(parameter, parameters[parameter]);
@@ -1105,7 +1103,7 @@ app.get('/api/generate-certificate', async (req, res) => {
 app.get('/api/generate-return-record', async (req, res) => {
     const orderId = req.query.order_id;
     const print = req.query.print;
-    const today = new Date().toISOString()
+    const today = new Date()
     const hours = String(today.getHours()).padStart(2, '0');
     const minutes = String(today.getMinutes()).padStart(2, '0');
     const seconds = String(today.getSeconds()).padStart(2, '0');
