@@ -240,6 +240,7 @@
 
 
 .sensor_entry_grid_container {
+    position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
@@ -705,4 +706,20 @@
 
 .check_box_container input:checked~.grid_check_box:after {
     display: block;
+}
+
+
+.remove_batch_button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: max-content;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: large;
+    color: #f1f1f1;
+    margin: 5px;
+    width: 45%;
+    box-sizing: border-box;
 }

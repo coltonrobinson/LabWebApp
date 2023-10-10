@@ -4,6 +4,7 @@ import { useAppContext } from "../../contexts/app";
 import addSensor from "../../utils/addSensor";
 import callApi from "../../utils/api/callApi";
 import ScannedSensors from "../ScannedSensors/ScannedSensors";
+import ConfirmationPopup from "../ConfirmationPopup/ConfirmationPopup";
 
 
 import styles from "../../styles/styles.module.css";
@@ -17,6 +18,7 @@ function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches
     const [displayed, setDisplayed] = useState(true);
     const [location, setLocation] = useState('');
     const [currentLocation, setCurrentLocation] = useState('No location set');
+    const [confirmationArray, setConfirmationArray] = useState(false);
 
     const handleAddSensor = (event) => {
         event.preventDefault();
@@ -114,6 +116,7 @@ function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches
 
     return (
         <>
+        {confirmationArray.length > 0 ? <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={removeBatch} /> : <></>}
             <button className={styles.default_button} onClick={() => setDisplayed(false)}>{`Hide (Batch: ${batchNumber} | Calibration procedure: ${calibrationProcedureId}) | Total sensors: ${sensors.length}`}</button>
             <h1 className={styles.title}>{`Current location: ${currentLocation}`}</h1>
             <div className={styles.sensor_entry_grid_container}>
@@ -124,7 +127,7 @@ function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches
                     <input type='text' value={location} onChange={event => setLocation(event.target.value)} className={styles.default_text_box} placeholder={'Location'} />
                 </form>
                 <ScannedSensors sensorList={sensors} />
-                <button type="button" className={`${styles.default_button} ${styles.red}`} onClick={removeBatch}>Remove batch</button>
+                <button type="button" className={`${styles.remove_batch_button} ${styles.red}`} onClick={() => setConfirmationArray([`Are you sure you would like to remove batch ${batchNumber}?`])}>Remove batch</button>
             </div>
         </>
     )
