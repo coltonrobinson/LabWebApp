@@ -923,10 +923,10 @@ app.get('/api/print-certificate-labels', async (req, res) => {
     const calibrationDate = req.query.calibration_date;
     const dueDate = req.query.due_date;
     const certificateNumber = req.query.certificate_number;
-    if (process.env.STATUS === 'development') {
-        res.json({ 'Result': `Failed: print disabled in test environment` });
-        return;
-    }
+    // if (process.env.STATUS === 'development') {
+    //     res.json({ 'Result': `Failed: print disabled in test environment` });
+    //     return;
+    // }
     let url = `http://192.168.1.79:8000/print-label/`;
 
     fetch(`${url}?calibration_date=${calibrationDate}&due_date=${dueDate}&certificate_number=${certificateNumber}`)

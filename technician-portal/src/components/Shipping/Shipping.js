@@ -22,6 +22,7 @@ function Shipping() {
   } = useAppContext()
 
   const [certificatesGeneratedDate, setCertificatesGeneratedDate] = useState(null);
+  const [sensor, setSensor] = useState('');
   const [labelsPrinted, setLabelsPrinted] = useState(false);
   const [certificatesPrinted, setCertificatesPrinted] = useState(false);
   const [certificatesDownloaded, setCertificatesDownloaded] = useState(false);
@@ -594,7 +595,32 @@ function Shipping() {
       }
       setLabelsPrinted(true)
     }
+  };
+
+
+  const printLabel = event => {
+    event.preventDefault()
+    if (!sensor) {
+      setPopupMessage(`Please enter sensor id`);
+      return;
+    }
+    const certificate = certificateList.current.filter(cert => cert.sensor_id === parseInt(sensor.split(':')[0]))[0]
+    if (!certificate) {
+      setPopupMessage(`No certificates found for sensor ${sensor}`)
+      return;
+    }
+    try {
+      callApi('print-certificate-labels', { calibration_date: certificate.generate_certificate_json.CS1, due_date: certificate.generate_certificate_json.CS2, certificate_number: `MNT-${certificate.certificate_id}` })
+      .then(() => setPopupMessage('Label printed'))
+    } catch (error) {
+      console.error(error)
+      setPopupMessage('Unable to print label');
+      return;
+    }
+    setSensor('');
   }
+
+
   const printCertificates = async () => {
     if (certificateList.current.length === 0) {
       setPopupMessage(`There are no certificates to print`)
@@ -723,36 +749,40 @@ function Shipping() {
           ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates generated on {certificatesGeneratedDate}</span>
           : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates</span>}
 
-        <button className={styles.default_button_half} onClick={printCertificateLabels}>Print labels</button>
-        {labelsPrinted
-          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Labels printed</span>
-          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No labels printed</span>}
+        <button className={styles.default_button_half} onClick={printReturnRecord}>Print return record</button>
+        {returnRecordPrinted
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record printed</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not printed</span>}
 
         <button className={styles.default_button_half} onClick={printCertificates}>Print certificates</button>
         {certificatesPrinted
           ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates printed</span>
           : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No certificates printed</span>}
 
-        <button className={styles.default_button_half} onClick={downloadCertificates}>Download certificates</button>
-        {certificatesDownloaded
-          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates downloaded</span>
-          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
-
-        <button className={styles.default_button_half} onClick={printReturnRecord}>Print return record</button>
-        {returnRecordPrinted
-          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record printed</span>
-          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not printed</span>}
-
         <button className={styles.default_button_half} onClick={createReturnRecord}>Download return record</button>
         {returnRecordGenerated
           ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Return record downloaded</span>
           : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
 
+        <button className={styles.default_button_half} onClick={downloadCertificates}>Download certificates</button>
+        {certificatesDownloaded
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates downloaded</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>Not downloaded</span>}
+
+        <button className={styles.default_button_half} onClick={printCertificateLabels}>Print all labels</button>
+        {labelsPrinted
+          ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Labels printed</span>
+          : <span className={`${styles.status_message} ${styles.status_dot_red}`}>No labels printed</span>}
+
+        <form onSubmit={printLabel}>
+          <input type='text' value={sensor} onChange={event => setSensor(event.target.value)} className={styles.default_text_box} placeholder={'Scan sensor to print label'} />
+        </form>
+
         <button className={styles.default_button} onClick={handleCloseOrder}>Close Order</button>
 
         <div className={styles.batches_container}>
           {batches.length && batches.map(batch =>
-            <div className={styles.shipping_batches}>
+            <div key={batch.batch_id} className={styles.shipping_batches}>
               {batch.current_location
                 ? `Batch ${batch.batch_id} | Current location: ${batch.current_location}`
                 : `Batch ${batch.batch_id} (Shipped)`}
