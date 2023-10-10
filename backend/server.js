@@ -7,8 +7,8 @@ const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const fs = require('fs');
 const QRCode = require('qrcode');
 const fetch = require('node-fetch');
-const { finished } = require('stream');
 require('dotenv').config();
+const PDFMerger = require('pdf-merger-js');
 
 const azureConnectionString = process.env.AZURE_CONNECTION_STRING;
 const monnitSecretKey = process.env.IMONNIT_API_SECRET_KEY_ID;
@@ -1099,6 +1099,49 @@ app.get('/api/generate-certificate', async (req, res) => {
     });
 });
 
+app.get('/api/generate-order-certificates', async (req, res) => {
+    const orderId = req.query.order_id;
+    const print = req.query.print;
+
+    pool.query(`SELECT * FROM api_order
+                INNER JOIN api_batch
+                ON api_batch.order_id = api_order.order_id
+                INNER JOIN api_sensor
+                ON api_sensor.batch_id = api_batch.batch_id
+                INNER JOIN api_certificate
+                ON api_certificate.certificate_id = api_sensor.certificate_id
+                WHERE api_order.order_id = $1
+                ORDER BY api_certificate.certificate_id`, [orderId], async (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: `Error executing query: ${err}` });
+        }
+        if (!result.rows[0]) {
+            return res.status(404).json({ error: `No certificates found under order id ${orderId}` });
+        }
+        const certificates = result.rows;
+        let merger = new PDFMerger()
+        for (const certificate of certificates) {
+            const certificateJson = { ...{ 'CertNumber': `MNT-${certificate.certificate_id}` }, ...certificate.generate_certificate_json };
+            const bytes = await fillCertificate(certificate.template, certificateJson);
+            fs.writeFileSync('fileOutputs/certificate.pdf', bytes);
+            await merger.add('fileOutputs/certificate.pdf');
+        }
+        const finalCertificates = await merger.saveAsBuffer();
+
+        try {
+            if (print) {
+                printPdf(finalCertificates);
+            }
+            res.setHeader("Content-Disposition", `attachment; filename=${certificates[0].customer_order_number}Certificates.pdf`);
+            res.setHeader("Content-Type", "application/json; charset=utf-8");
+            res.end(Buffer.from(finalCertificates));
+        } catch (error) {
+            console.error("Error occurred:", error);
+            res.status(500).json({ error: "An error occurred while processing the PDF." });
+        }
+    });
+});
+
 
 app.get('/api/generate-return-record', async (req, res) => {
     const orderId = req.query.order_id;
@@ -1107,8 +1150,7 @@ app.get('/api/generate-return-record', async (req, res) => {
     const hours = String(today.getHours()).padStart(2, '0');
     const minutes = String(today.getMinutes()).padStart(2, '0');
     const seconds = String(today.getSeconds()).padStart(2, '0');
-
-
+    
     pool.query(`SELECT api_order.customer_order_number, api_batch.calibration_procedure_id, api_technician.first_name, api_technician.last_name, api_sensor.*, api_certificate.generate_certificate_json, api_customer.*
                 FROM api_order
                 JOIN api_customer ON api_order.customer_id = api_customer.customer_id
@@ -1148,7 +1190,6 @@ app.get('/api/generate-return-record', async (req, res) => {
             }
             const bytes = await fillForm('returnRecordTemplate.pdf', fields);
 
-
             pool.query(`SELECT api_order.customer_order_number, api_batch.calibration_procedure_id, api_sensor.*, api_certificate.generate_certificate_json
                         FROM api_order
                         JOIN api_batch ON api_order.order_id = api_batch.order_id
@@ -1159,9 +1200,7 @@ app.get('/api/generate-return-record', async (req, res) => {
                     return res.status(500).json({ error: `Error executing query: ${err}` });
                 }
                 const data = result.rows;
-
                 const finishedFormBytes = await addSensorsToReturnRecord(bytes, data)
-
                 if (print) {
                     printPdf(finishedFormBytes);
                 }
@@ -1351,22 +1390,24 @@ async function addSensorsToReturnRecord(bytes, sensorList) {
     const fontSize = 6;
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     let availableHeight = 378;
-    let startY = 394;
+    let startY = 405;
 
     let currentPage = newPage;
-
-    for (let i = 0; i < sensorList.length; i++) {
-        const sensor = sensorList[i];
-        if (i * rowHeight > availableHeight) {
+    let sensorsOnPage = 0;
+    for (let index = 0; index < sensorList.length; index++) {
+        const sensor = sensorList[index];
+        if (sensorsOnPage * rowHeight > availableHeight) {
             currentPage = pdfDoc.addPage([newPage.getWidth(), newPage.getHeight()]);
             availableHeight = 720;
             startY = 750;
-            i = 0;
+            sensorsOnPage = 0;
+        } else {
+            sensorsOnPage++;
         }
 
         currentPage.drawRectangle({
             x: 53,
-            y: startY - i * rowHeight,
+            y: startY - sensorsOnPage * rowHeight,
             width: 506,
             height: rowHeight,
             borderColor: rgb(0, 0, 0),
@@ -1394,8 +1435,8 @@ async function addSensorsToReturnRecord(bytes, sensorList) {
             const textX = centerX - textWidth / 2;
 
             currentPage.drawLine({
-                start: { x: startX, y: startY + 11 - i * rowHeight },
-                end: { x: startX, y: startY - i * rowHeight },
+                start: { x: startX, y: startY + 11 - sensorsOnPage * rowHeight },
+                end: { x: startX, y: startY - sensorsOnPage * rowHeight },
                 thickness: 1,
                 color: rgb(0, 0, 0),
             });
@@ -1408,10 +1449,10 @@ async function addSensorsToReturnRecord(bytes, sensorList) {
 
             currentPage.drawText(textArray[j], {
                 x: textX,
-                y: startY + 3 - i * rowHeight,
+                y: startY + 3 - sensorsOnPage * rowHeight,
                 size: fontSize,
                 color: textColor,
-                textAlign: 'center', // Center-align the text
+                textAlign: 'center',
             });
         }
     }

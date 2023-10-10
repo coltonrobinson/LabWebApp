@@ -601,11 +601,11 @@ function Shipping() {
     }
 
     try {
+      callApi('generate-order-certificates', { order_id: orderNumber, print: true })
       for (const certificate of certificateList.current) {
-        await callApi('generate-certificate', {
+        callApi('generate-certificate', {
           certificate_id: certificate.certificate_id,
           upload: true,
-          print: true
         })
       }
     } catch (error) {
@@ -651,30 +651,29 @@ function Shipping() {
       });
   }
 
-  const downloadCertificates = () => {
-    for (const certificate of certificateList.current) {
-      fetch(`http://${ip}:8000/api/generate-certificate?certificate_id=${certificate.certificate_id}&upload=true`)
-        .then(response => {
-          if (response.ok && response.headers.get('content-type') === 'application/json; charset=utf-8') {
-            return response.blob();
-          } else {
-            throw new Error(`Failed to generate certificate MNT-${certificate.certificate_id}`);
-          }
-        })
-        .then(blob => {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `MNT-${certificate.certificate_id}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          return;
-        });
-    }
+  const downloadCertificates = async () => {
+    const order = await callApi('get-order-by-id', { 'order_id': orderNumber });
+    fetch(`http://${ip}:8000/api/generate-order-certificates?order_id=${orderNumber}`)
+      .then(response => {
+        if (response.ok && response.headers.get('content-type') === 'application/json; charset=utf-8') {
+          return response.blob();
+        } else {
+          throw new Error(`Failed to generate certificates for order ${orderNumber}`);
+        }
+      })
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${order.customer_order_number}Certificates.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        return;
+      });
     setCertificatesDownloaded(true);
   }
 
@@ -718,7 +717,7 @@ function Shipping() {
         {confirmationArray.length && <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={endShipping} />}
 
         <h1 className={styles.title}>Order: {orderNumber}</h1>
-        
+
         <button className={styles.default_button_half} onClick={generateCertificates}>Create certificates</button>
         {certificatesGeneratedDate
           ? <span className={`${styles.status_message} ${styles.status_dot_green}`}>Certificates generated on {certificatesGeneratedDate}</span>

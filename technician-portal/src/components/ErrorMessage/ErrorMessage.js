@@ -5,7 +5,12 @@ import styles from '../../styles/styles.module.css';
 function ErrorMessage() {
   const { popupMessage, setPopupMessage } = useAppContext()
 
-  if (!popupMessage) return <></>
+  if (!popupMessage) return <></>;
+  window.scroll({
+    top: 0, 
+    left: 0, 
+    behavior: 'smooth'
+  });
   
   return (
     <div className={styles.error_popup}>
