@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppContext } from '../../contexts/app';
@@ -18,9 +18,11 @@ function SignInBox() {
 
     let buttonText = isSignedIn ? 'Sign Out' : 'Sign In';
 
-    if (!technicianId && location.pathname !== '/signIn') {
-        navigate('/signIn')
-    }
+    useEffect(() => {
+        if (!technicianId && location.pathname !== '/signIn') {
+            navigate('/signIn')
+        }
+    })
 
     const handleChange = (event) => {
         temporaryTechnicianName = event.target.value;
