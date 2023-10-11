@@ -29,6 +29,7 @@ function Shipping() {
   const [returnRecordGenerated, setreturnRecordGenerated] = useState(false);
   const [returnRecordPrinted, setreturnRecordPrinted] = useState(false);
   const [confirmationArray, setConfirmationArray] = useState(false);
+  const [order, setOrder] = useState(null)
 
   const promises = [];
 
@@ -46,6 +47,10 @@ function Shipping() {
 
   useEffect(() => {
     getCertificates();
+    callApi('get-order-by-id', { 'order_id': orderNumber })
+    .then(response => {
+      setOrder(response)
+    })
   })
 
   const generateCertificates = async () => {
@@ -84,7 +89,6 @@ function Shipping() {
       try {
         const equipmentList = await callApi('get-equipment');
         const sensors = await callApi('get-sensors-by-order-id', { 'order_id': orderNumber });
-        const order = await callApi('get-order-by-id', { 'order_id': orderNumber });
         const customer = await callApi('get-customer-by-id', { 'customer_id': order.customer_id });
 
         for (const sensor of sensors) {
@@ -733,7 +737,7 @@ function Shipping() {
       });
     }
 
-    setConfirmationMessage(`Order: ${orderNumber} closed`);
+    setConfirmationMessage(`Order: ${orderNumber} closed, please add ${order.customer_order_number} to the slack channel`);
     navigate('/confirmation');
   }
 
@@ -742,7 +746,7 @@ function Shipping() {
       <div className={styles.menu}>
         {confirmationArray.length && <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={endShipping} />}
 
-        <h1 className={styles.title}>Order: {orderNumber}</h1>
+        <h1 className={styles.title}>Order: {orderNumber} | {order ? order.customer_order_number : 'Loading...'}</h1>
 
         <button className={styles.default_button_half} onClick={generateCertificates}>Create certificates</button>
         {certificatesGeneratedDate
