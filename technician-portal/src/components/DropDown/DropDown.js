@@ -3,8 +3,8 @@ import callApi from "../../utils/api/callApi";
 
 import styles from "../../styles/styles.module.css";
 
-const DropDown = ({ options, selectedOption, setSelectedOption, batches, setBatches, order }) => {
-    const { technicianId, setPopupMessage } = useAppContext()
+const DropDown = ({ options, selectedOption, setSelectedOption, batches, setBatches }) => {
+    const { technicianId, setPopupMessage, order } = useAppContext()
 
     const createBatch = async (calibration_procedure) => {
         if (!technicianId) {
