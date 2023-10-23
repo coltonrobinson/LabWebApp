@@ -132,25 +132,24 @@ function ManageBatch() {
     })
 
     const downloadWorkOrder = () => {
-        axios.get(`http://${ip}:8000/api/generate-work-order?batch_id=${batchNumber}`)
+        axios.get(`http://${ip}:8000/api/generate-work-order?batch_id=${batchNumber}`, { responseType: 'blob' })
             .then(response => {
-                console.log(response.ok)
-                if (response.ok) {
-                    console.log(response.headers.get('content-type'))
-                    if (response.headers.get('content-type') === 'application/json; charset=utf-8') {
-                        console.log('test')
-                        return response.blob();
-                    } else {
-                        console.error(`Expecting work order 'application/json' but instead got '${response.headers.get("content-type")}': ${response}`);
-                        setPopupMessage(`Failed to generate work order for batch ${batchNumber}`);
+                if (response.status === 200) {
+                    const contentType = response.headers['content-type']
+                    if (contentType !== 'application/json; charset=utf-8') {
+                        console.error(`Expecting work order 'application/json' but instead got '${contentType}': ${response}`);
+                        setPopupMessage(`Failed to generate work order for batch ${batchNumber}: Server responded with the wrong file type`);
                     }
                 } else {
-                    console.error(`Could not complete generation, response.ok: ${response.ok}`);
-                    setPopupMessage(`Failed to generate work order for batch ${batchNumber}`);
+                    console.error(`Could not complete generation, response.status: ${response.status}`);
+                    setPopupMessage(`Failed to generate work order for batch ${batchNumber}: Bad server response`);
                 }
+                return response;
             })
-            .then(blob => {
-                const url = URL.createObjectURL(blob);
+            .then(response => {
+                console.log(JSON.stringify(response.data))
+                const url = URL.createObjectURL(response.data);
+                console.log(url)
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = `workOrder${batchNumber}.pdf`;

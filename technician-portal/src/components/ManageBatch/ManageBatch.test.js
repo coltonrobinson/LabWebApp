@@ -1,5 +1,5 @@
 /* eslint-disable testing-library/no-unnecessary-act */
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ManageBatch from './ManageBatch';
 import { AppWrapper } from '../../contexts/app';
 import mockAxios from 'axios';
@@ -11,12 +11,19 @@ jest.mock('../TestingMenu/TestingMenu.js', () => () => {
 })
 jest.mock('axios')
 const mockedUseNavigate = jest.fn()
-jest.spyOn(global.console, 'error').mockImplementation(() => { });
+const mockSetPopupMessage = jest.fn()
 
 jest.mock('react-router-dom', () => ({
     ...(jest.requireActual('react-router-dom')),
     useNavigate: () => mockedUseNavigate,
 }))
+// jest.spyOn(global.console, 'error').mockImplementation(() => { });
+
+global.URL.createObjectURL = jest.fn();
+
+afterEach(() => {
+  global.URL.createObjectURL.mockReset();
+});
 
 beforeEach(() => {
     jest.clearAllMocks()
@@ -27,12 +34,20 @@ beforeEach(() => {
                 return Promise.resolve({ data: { current_location: 'testLocation' } })
             case `http://${ip}:8000/api/generate-work-order?batch_id=1`:
                 return Promise.resolve({
-                    ok: true,
+                    data: new Blob(['mock file content'], { type: 'application/json; charset=utf-8' }),
                     status: 200,
                     statusText: 'OK',
-                    headers: { 'content-type': 'application/json' },
-                    data: {},
-                    blob: jest.fn(() => Promise.resolve(new Blob([])))
+                    headers: { 'content-type': 'application/json; charset=utf-8' },
+                });
+            case `http://${ip}:8000/api/generate-work-order?batch_id=2`:
+                return Promise.resolve({
+                    status: 400,
+                    headers: { 'content-type': 'application/json; charset=utf-8' },
+                });
+            case `http://${ip}:8000/api/generate-work-order?batch_id=3`:
+                return Promise.resolve({
+                    status: 200,
+                    headers: { 'content-type': 'wrong content type' },
                 });
             default:
                 return Promise.reject();
@@ -74,13 +89,13 @@ test('Manage batch works with each procedureId', async () => {
     }
 })
 
-test('generating work order with failure is handled', async () => {
+test('generating work order with bad status code is handled', async () => {
     await act(async () => {
         render(
             <AppWrapper sharedState={
                 {
                     batchNumber: 2, sensorList: [], setSensorList: jest.fn(),
-                    procedureId: 1, setPopupMessage: jest.fn(), technicianId: 1
+                    procedureId: 1, setPopupMessage: string => mockSetPopupMessage(string), technicianId: 1,
                 }
             } >
                 <ManageBatch />
@@ -89,7 +104,31 @@ test('generating work order with failure is handled', async () => {
     })
     const downloadWorkOrderButton = screen.getByText(/download work order/i)
     fireEvent.click(downloadWorkOrderButton)
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/generate-work-order?batch_id=2`)
+    expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/generate-work-order?batch_id=2`, { "responseType": "blob" })
+    await waitFor(() => {
+        expect(mockSetPopupMessage).toHaveBeenCalledWith('Failed to generate work order for batch 2: Bad server response');
+    });
+})
+
+test('generating work order with wrong file type is handled', async () => {
+    await act(async () => {
+        render(
+            <AppWrapper sharedState={
+                {
+                    batchNumber: 3, sensorList: [], setSensorList: jest.fn(),
+                    procedureId: 1, setPopupMessage: string => mockSetPopupMessage(string), technicianId: 1,
+                }
+            } >
+                <ManageBatch />
+            </AppWrapper>
+        )
+    })
+    const downloadWorkOrderButton = screen.getByText(/download work order/i)
+    fireEvent.click(downloadWorkOrderButton)
+    expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/generate-work-order?batch_id=3`, { "responseType": "blob" })
+    await waitFor(() => {
+        expect(mockSetPopupMessage).toHaveBeenCalledWith('Failed to generate work order for batch 3: Server responded with the wrong file type');
+    });
 })
 
 test('generating work order with success returns blob', async () => {
@@ -107,5 +146,8 @@ test('generating work order with success returns blob', async () => {
     })
     const downloadWorkOrderButton = screen.getByText(/download work order/i)
     fireEvent.click(downloadWorkOrderButton)
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/generate-work-order?batch_id=1`)
+    expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/generate-work-order?batch_id=1`, { "responseType": "blob" })
+    // expect(global.URL.createObjectURL).toBeCalledWith('test')
+    // expect(document.body.appendChild).toHaveBeenCalledWith(document.createElement('a'));
+    // expect(document.body.removeChild).toHaveBeenCalledWith(document.createElement('a'));
 })
