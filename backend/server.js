@@ -137,7 +137,7 @@ app.get('/api/get-last-humidity-stable-reading', (req, res) => {
         minutes = 180;
     }
     if (!reference) {
-        reference = 'S000113';
+        reference = 'S000119';
     }
     if (setPoint) {
         setPoint = parseInt(setPoint);
@@ -1146,12 +1146,8 @@ app.get('/api/generate-order-certificates', async (req, res) => {
 app.get('/api/generate-return-record', async (req, res) => {
     const orderId = req.query.order_id;
     const print = req.query.print;
-    const today = new Date()
-    const hours = String(today.getHours()).padStart(2, '0');
-    const minutes = String(today.getMinutes()).padStart(2, '0');
-    const seconds = String(today.getSeconds()).padStart(2, '0');
     
-    pool.query(`SELECT api_order.customer_order_number, api_batch.calibration_procedure_id, api_technician.first_name, api_technician.last_name, api_sensor.*, api_certificate.generate_certificate_json, api_customer.*
+    pool.query(`SELECT api_order.*, api_batch.calibration_procedure_id, api_technician.first_name, api_technician.last_name, api_sensor.*, api_certificate.generate_certificate_json, api_customer.*
                 FROM api_order
                 JOIN api_customer ON api_order.customer_id = api_customer.customer_id
                 JOIN api_batch ON api_order.order_id = api_batch.order_id
@@ -1170,9 +1166,14 @@ app.get('/api/generate-return-record', async (req, res) => {
             return res.json({ 'Result': 'Unable to find data' });
         } else {
             data = result.rows[0];
+            let date;
+            data.shipped_timestamp ? date = new Date(data.shipped_timestamp) : date = new Date();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
 
             const fields = {
-                'date': `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
+                'date': `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`,
                 'time': `${hours}:${minutes}:${seconds}`,
                 'technician': `${data.first_name} ${data.last_name}`,
                 'clientName': `${data.name}`,

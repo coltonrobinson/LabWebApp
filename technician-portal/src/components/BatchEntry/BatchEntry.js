@@ -13,7 +13,7 @@ function BatchEntry() {
         technicianId, setPopupMessage, sensorGrid, setSensorGrid
     } = useAppContext()
 
-    const [batches, setBatches] = useState([<h1 className={styles.title}>Loading...</h1>]);
+    const [batches, setBatches] = useState([<h1 className={styles.title} key={'fillerKey'}>Loading...</h1>]);
 
     useEffect(() => {
         let isMounted = true;
@@ -44,7 +44,7 @@ function BatchEntry() {
                         return;
                     }
                     if (response.length === 0) {
-                        setBatches([<h1 className={styles.title}>No batches found</h1>]);
+                        setBatches([<h1 className={styles.title} key={'fillerKey'}>No batches found</h1>]);
                         return;
                     }
                     const batchList = []

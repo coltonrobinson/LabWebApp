@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 import { useAppContext } from "../../contexts/app";
 import callApi from "../../utils/api/callApi";
@@ -131,10 +132,13 @@ function ManageBatch() {
     })
 
     const downloadWorkOrder = () => {
-        fetch(`http://${ip}:8000/api/generate-work-order?batch_id=${batchNumber}`)
+        axios.get(`http://${ip}:8000/api/generate-work-order?batch_id=${batchNumber}`)
             .then(response => {
+                console.log(response.ok)
                 if (response.ok) {
+                    console.log(response.headers.get('content-type'))
                     if (response.headers.get('content-type') === 'application/json; charset=utf-8') {
+                        console.log('test')
                         return response.blob();
                     } else {
                         console.error(`Expecting work order 'application/json' but instead got '${response.headers.get("content-type")}': ${response}`);

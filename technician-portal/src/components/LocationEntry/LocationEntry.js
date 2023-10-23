@@ -22,7 +22,6 @@ function LocationEntry({ sensorList }) {
         if (!response.error) {
           setPopupMessage(`Batch moved to ${location}`);
           navigate('/manageBatch');
-
           if (location.startsWith('S')) {
             callApi('log-batch-interaction', {
               department: 'testing',
@@ -59,7 +58,7 @@ function LocationEntry({ sensorList }) {
 
   return (
     <div className={styles.menu}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} >
         <input type='text' value={location} onChange={handleChange} className={styles.default_text_box} placeholder={'Location'} />
         <button type='submit' className={styles.default_button}>Submit</button>
       </form>

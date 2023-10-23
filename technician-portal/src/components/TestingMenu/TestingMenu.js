@@ -172,7 +172,7 @@ function TestingMenu({ setPoints }) {
             if (calibrationProcedureId === 3) {
                 stableTime = await callApi('get-last-humidity-stable-reading', { 'set_point': setPoints[i].humidity })
             } else if (calibrationProcedureId === 5) {
-                stableTime = await callApi('get-last-humidity-stable-reading', { 'set_point': setPoints[i + 1].temperature, 'type': 'temperature', 'reference': 'S000113' })
+                stableTime = await callApi('get-last-humidity-stable-reading', { 'set_point': setPoints[i + 1].temperature, 'type': 'temperature', 'reference': 'S000119' })
             } else if (calibrationProcedureId === 1) {
                 stableTime = await callApi('get-last-temperature-stable-reading', { 'set_point': setPoints[i + 1].temperature, 'reference': references[i], 'stability_criteria': JSON.stringify(setPoints[i + 1].stabilityCriteria) });
             } else {
@@ -351,7 +351,7 @@ function TestingMenu({ setPoints }) {
         }
     }
 
-    const getHumidityAverages = async (sensorList, setPoint, reference = 'S000113') => {
+    const getHumidityAverages = async (sensorList, setPoint, reference = 'S000119') => {
         const data = await callApi('get-last-humidity-stable-reading', { 'set_point': setPoint });
         let readings = await callApi('get-humidity-reading-range', { 'timestamp': data[1] });
 
@@ -523,10 +523,10 @@ function TestingMenu({ setPoints }) {
                     <div className={styles.grid_row}>
                         <button className={`${styles.default_button} ${styles.red}`} onClick={clearSelectedSensor}>Clear selection</button>
                         <button className={styles.default_button} onClick={() => { setRefreshButtonText('Loading...'); setStableTimesToLoading(); refresh(); setRefreshButtonText('Refresh') }}>{refreshButtonText}</button>
-                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[0], 'S000113', 5, 13, 1, 0.23, 'temperature', true)}>As Found</button>
-                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[1], 'S000113', 5, 13, 1, 0.23, 'temperature')}>{setPoints[1].temperature}°C</button>
-                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[2], 'S000113', 5, 13, 1, 0.4, 'temperature')}>{setPoints[2].temperature}°C</button>
-                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[3], 'S000113', 5, 13, 1, 0.62, 'temperature')}>{setPoints[3].temperature}°C</button>
+                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[0], 'S000119', 5, 13, 1, 0.23, 'temperature', true)}>As Found</button>
+                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[1], 'S000119', 5, 13, 1, 0.23, 'temperature')}>{setPoints[1].temperature}°C</button>
+                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[2], 'S000119', 5, 13, 1, 0.4, 'temperature')}>{setPoints[2].temperature}°C</button>
+                        <button className={styles.default_button} onClick={() => createRotronicTemperatureReading(setPoints[3], 'S000119', 5, 13, 1, 0.62, 'temperature')}>{setPoints[3].temperature}°C</button>
                         <div className={styles.grid_entry}>Stable times</div>
                         <div className={styles.grid_entry}></div>
                         <StableTimeDisplay stableTime={point1StableTime} />

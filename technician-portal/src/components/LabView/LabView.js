@@ -54,7 +54,7 @@ function LabView() {
             <h1 className={styles.title}>Lab View
                 {labReadings}
                 <span className={styles.server_status}>
-                    Aggregator status: <span className={`${aggregatorStatusDotStyle} ${styles.status_dot}`}></span>
+                    Aggregator status: <span className={`${aggregatorStatusDotStyle} ${styles.status_dot}`} data-testid={'statusDot'} ></span>
                 </span>
             </h1>
             <div className={styles.equipment_container}>

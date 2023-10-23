@@ -129,12 +129,14 @@ function Metrics() {
   }
 
   return (
-    <div className={styles.graph_grid}>
-      <div className={styles.graph}>
-        {<Bar options={byProcedureOptions} data={byProcedureData} />}
-      </div>
-      <div className={styles.graph}>
-        {<Bar options={totalOptions} data={totalData} />}
+    <div data-testid='graphs'>
+      <div className={styles.graph_grid}>
+        <div className={styles.graph}>
+          {<Bar options={byProcedureOptions} data={byProcedureData} />}
+        </div>
+        <div className={styles.graph}>
+          {<Bar options={totalOptions} data={totalData} />}
+        </div>
       </div>
     </div>
   );

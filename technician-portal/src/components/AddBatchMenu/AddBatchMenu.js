@@ -10,7 +10,7 @@ import ConfirmationPopup from "../ConfirmationPopup/ConfirmationPopup";
 import styles from "../../styles/styles.module.css";
 
 function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches }) {
-    const { setPopupMessage, technicianId } = useAppContext()
+    const { setPopupMessage, technicianId } = useAppContext();
 
     const [addedSensors, setAddedSensors] = useState([]);
     const [sensors, setSensors] = useState([]);
@@ -120,7 +120,7 @@ function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches
             <button className={styles.default_button} onClick={() => setDisplayed(false)}>{`Hide (Batch: ${batchNumber} | Calibration procedure: ${calibrationProcedureId}) | Total sensors: ${sensors.length}`}</button>
             <h1 className={styles.title}>{`Current location: ${currentLocation}`}</h1>
             <div className={styles.sensor_entry_grid_container}>
-                <form onSubmit={handleAddSensor}>
+                <form onSubmit={handleAddSensor} data-testid={'addSensorForm'}>
                     <input type='text' value={sensor} onChange={event => setSensor(event.target.value)} className={styles.default_text_box} placeholder={'Sensor ID:Check Digit'} />
                 </form>
                 <form onSubmit={handleSetLocation}>
