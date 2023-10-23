@@ -26,6 +26,7 @@ function Shipping() {
   const [labelsPrinted, setLabelsPrinted] = useState(false);
   const [certificatesPrinted, setCertificatesPrinted] = useState(false);
   const [certificatesDownloaded, setCertificatesDownloaded] = useState(false);
+
   const [returnRecordGenerated, setreturnRecordGenerated] = useState(false);
   const [returnRecordPrinted, setreturnRecordPrinted] = useState(false);
   const [confirmationArray, setConfirmationArray] = useState(false);

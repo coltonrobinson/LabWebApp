@@ -21,6 +21,39 @@ function SalesOrderForm() {
     const [selectedOption, setSelectedOption] = useState('');
     const [batchDisplay, setBatchDisplay] = useState(null);
 
+    const CUSTOMER_INPUTS = [
+        {
+            type: 'text',
+            placeholder: 'Client Name',
+            defaultValue: 'Monnit'
+        },
+        {
+            type: 'text',
+            placeholder: 'Contact Name',
+            defaultValue: 'Sarah Larsen'
+        },
+        {
+            type: 'text',
+            placeholder: 'Address Line 1',
+            defaultValue: '3400 South, West Temple'
+        },
+        {
+            type: 'text',
+            placeholder: 'Address Line 2',
+            defaultValue: 'South Salt Lake, UT 84115'
+        },
+        {
+            type: 'text',
+            placeholder: 'Phone Number',
+            defaultValue: '801-561-5555'
+        },
+        {
+            type: 'text',
+            placeholder: 'Email Address',
+            defaultValue: 'sarahl@monnit.com'
+        },
+    ]
+
     useEffect(() => {
         callApi('get-calibration-procedures')
             .then(response => {
@@ -72,12 +105,15 @@ function SalesOrderForm() {
             <div className={styles.grid_menu}>
                 <div className={styles.menu_form}>
                     <div className={styles.grid_entry_container}>
-                        <input type='text' className={styles.customer_info_text_box} placeholder={'Client Name'} defaultValue={'Monnit'} />
-                        <input type='text' className={styles.customer_info_text_box} placeholder={'Contact Name'} defaultValue={'Sarah Larsen'} />
-                        <input type='text' className={styles.customer_info_text_box} placeholder={'Address Line 1'} defaultValue={'3400 South, West Temple'} />
-                        <input type='text' className={styles.customer_info_text_box} placeholder={'Address Line 2'} defaultValue={'South Salt Lake, UT 84115'} />
-                        <input type='text' className={styles.customer_info_text_box} placeholder={'Phone Number'} defaultValue={'801-561-5555'} />
-                        <input type='text' className={styles.customer_info_text_box} placeholder={'Email Address'} defaultValue={'sarahl@monnit.com'} />
+                        {CUSTOMER_INPUTS.map((inputItem, index) =>
+                            <input
+                                key={index + inputItem.placeholder}
+                                type={inputItem.type}
+                                className={styles.customer_info_text_box}
+                                placeholder={inputItem.placeholder}
+                                defaultValue={inputItem.defaultValue}
+                            />
+                        )}
                     </div>
                     <DropDown
                         options={calibrationProcedures}
@@ -85,7 +121,6 @@ function SalesOrderForm() {
                         setSelectedOption={setSelectedOption}
                         batches={batches}
                         setBatches={setBatches}
-                        order={order}
                     />
                     {batchDisplay}
                     <button onClick={handleSubmit} className={styles.default_button}>Complete Sales Order</button>
