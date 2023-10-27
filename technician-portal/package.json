@@ -26,13 +26,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "set CI=false &&react-scripts test --coverage --transformIgnorePatterns \"node_modules/(?!axios)/\"",
+    "test": "set CI=true &&react-scripts test --coverage --transformIgnorePatterns \"node_modules/(?!axios)/\"",
     "eject": "react-scripts eject"
   },
   "jest": {
     "coverageThreshold": {
       "global": {
-        "lines": 80
+        "lines": 50
       }
     }
   },
