@@ -137,7 +137,7 @@ function ManageBatch() {
                 if (response.status === 200) {
                     const contentType = response.headers['content-type']
                     if (contentType !== 'application/json; charset=utf-8') {
-                        console.error(`Expecting work order 'application/json' but instead got '${contentType}': ${response}`);
+                        console.error(`Expecting work order 'application/json; charset=utf-8' but instead got '${contentType}': ${response}`);
                         setPopupMessage(`Failed to generate work order for batch ${batchNumber}: Server responded with the wrong file type`);
                     }
                 } else {
@@ -147,9 +147,7 @@ function ManageBatch() {
                 return response;
             })
             .then(response => {
-                console.log(JSON.stringify(response.data))
                 const url = URL.createObjectURL(response.data);
-                console.log(url)
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = `workOrder${batchNumber}.pdf`;
@@ -174,8 +172,8 @@ function ManageBatch() {
         const promises = [];
         for (const sensor of sensorList) {
             try {
+                console.log(sensor)
                 promises.push(callApi('change-sensor-heartbeat', { sensor_id: sensor.sensor_id, heartbeat: heartbeat }));
-                callApi('change-sensor-heartbeat', { sensor_id: sensor.sensor_id, heartbeat: heartbeat })
             } catch (error) {
                 console.error(error);
                 setPopupMessage(`Sensor ${sensor.sensor_id} failed: ${error}`)
@@ -285,7 +283,7 @@ function ManageBatch() {
 
     const printWorkOrder = () => {
         callApi('generate-work-order', { batch_id: batchNumber, print: true })
-        .then(setPopupMessage(`Batch ${batchNumber} work order printed`))
+            .then(setPopupMessage(`Batch ${batchNumber} work order printed`))
     }
 
     return (
@@ -299,7 +297,7 @@ function ManageBatch() {
                         <input type='text' value={location} onChange={handleLocationChange} className={styles.default_text_box} placeholder={'Location'} />
                     </form>
                     <button className={styles.default_button} onClick={downloadWorkOrder}>Download work order</button>
-                    <form onSubmit={handleHeartBeatSubmit}>
+                    <form onSubmit={handleHeartBeatSubmit} data-testid={'heartbeatEntryForm'}>
                         <input type='text' value={heartbeat} onChange={handleHeartBeatChange} className={styles.default_text_box} placeholder={'Heartbeat'} />
                     </form>
                     <button className={styles.default_button} onClick={printWorkOrder}>Print work order</button>

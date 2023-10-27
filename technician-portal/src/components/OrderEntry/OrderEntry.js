@@ -22,9 +22,9 @@ function OrderEntry() {
             return;
         }
         callApi('get-batches-by-order-id', { order_id: orderId })
-            .then(batches => {
-                setBatches(batches);
-                for (const batch of batches) {
+            .then(response => {
+                setBatches(response);
+                for (const batch of response) {
                     callApi('log-batch-interaction', {
                         department: 'shipping',
                         start: true,

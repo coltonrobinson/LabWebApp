@@ -30,8 +30,8 @@ function BatchEntry() {
                 callApi('get-sensors', { 'batch_id': batch.batch_id })
                     .then(data => {
                         setSensorList(data);
+                        navigate('/manageBatch');
                     })
-                navigate('/manageBatch');
             } else {
                 setPopupMessage('Please sign in');
             }

@@ -17,12 +17,12 @@ jest.mock('react-router-dom', () => ({
     ...(jest.requireActual('react-router-dom')),
     useNavigate: () => mockedUseNavigate,
 }))
-// jest.spyOn(global.console, 'error').mockImplementation(() => { });
+jest.spyOn(global.console, 'error').mockImplementation(() => { });
 
 global.URL.createObjectURL = jest.fn();
 
 afterEach(() => {
-  global.URL.createObjectURL.mockReset();
+    global.URL.createObjectURL.mockReset();
 });
 
 beforeEach(() => {
@@ -34,7 +34,7 @@ beforeEach(() => {
                 return Promise.resolve({ data: { current_location: 'testLocation' } })
             case `http://${ip}:8000/api/generate-work-order?batch_id=1`:
                 return Promise.resolve({
-                    data: new Blob(['mock file content'], { type: 'application/json; charset=utf-8' }),
+                    data: new Blob(['mock file content', 'testing'], { type: 'application/json; charset=utf-8' }),
                     status: 200,
                     statusText: 'OK',
                     headers: { 'content-type': 'application/json; charset=utf-8' },
@@ -49,6 +49,8 @@ beforeEach(() => {
                     status: 200,
                     headers: { 'content-type': 'wrong content type' },
                 });
+            case `http://${ip}:8000/api/change-sensor-heartbeat`:
+                return Promise.resolve({ data: { Result: 'Success' } })
             default:
                 return Promise.reject();
         }
@@ -147,7 +149,4 @@ test('generating work order with success returns blob', async () => {
     const downloadWorkOrderButton = screen.getByText(/download work order/i)
     fireEvent.click(downloadWorkOrderButton)
     expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/generate-work-order?batch_id=1`, { "responseType": "blob" })
-    // expect(global.URL.createObjectURL).toBeCalledWith('test')
-    // expect(document.body.appendChild).toHaveBeenCalledWith(document.createElement('a'));
-    // expect(document.body.removeChild).toHaveBeenCalledWith(document.createElement('a'));
 })
