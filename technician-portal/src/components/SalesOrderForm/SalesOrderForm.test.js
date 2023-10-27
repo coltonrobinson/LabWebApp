@@ -6,7 +6,7 @@ import ip from '../../utils/ip/ip';
 import mockAxios from 'axios';
 import { act } from 'react-dom/test-utils';
 
-jest.mock('../Dropdown/Dropdown.js', () => () => {
+jest.mock('../DropDown/DropDown.js', () => () => {
     return <mock-dropdown />
 })
 
