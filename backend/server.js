@@ -9,6 +9,17 @@ const QRCode = require('qrcode');
 const fetch = require('node-fetch');
 require('dotenv').config();
 const PDFMerger = require('pdf-merger-js');
+const handlebars = require('handlebars');
+const sgMail = require('@sendgrid/mail');
+const format = require('pg-format');
+const { hashAndValidatePassword, verify } = require("./src/utils/hash-user");
+const path = require("path");
+const {
+    generateTokens,
+    generateToken,
+    decode,
+    verify: verifyToken,
+} = require("./src/utils/jwt");
 
 const azureConnectionString = process.env.AZURE_CONNECTION_STRING;
 const monnitSecretKey = process.env.IMONNIT_API_SECRET_KEY_ID;
@@ -39,13 +50,294 @@ pool.connect((err, client, release) => {
     console.log('Connected to database!');
     release();
 })
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const app = express();
 const port = 8000;
 app.locals.pool = pool;
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.listen(port, ip, () => {
     console.log(`Server running at http://${ip}:${port}/`);
+});
+
+app.post("/api/auth/sign-in", async (req, res) => {
+    const { email, password } = req.body;
+    const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
+        email,
+    ]);
+    const user = result.rows[0];
+    if (!user) {
+        return res.status(404).json({ error: `User not found` });
+    }
+
+    if (!user.isVerified) {
+        return res.status(403).json({ error: `User has not been verified` });
+    }
+
+    const isComparePassword = await verify(password, user.password);
+
+    if (!isComparePassword) {
+        return res
+            .status(400)
+            .json({ error: `Username and password are not correct` });
+    }
+
+    delete user.password;
+    const { accessToken, refreshToken } = generateTokens(
+        user,
+        process.env.JWT_SECRET_KEY
+    );
+    res.setHeader("access-token", accessToken);
+    res.setHeader("refresh-token", refreshToken);
+    res.status(200).json(user);
+});
+app.post("/api/auth/sign-up", async (req, res) => {
+    const { email, password, lastName, firstName } = req.body;
+    const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
+        email,
+    ]);
+    if (result.rows[0]) {
+        return res.status(409).json({ error: `User has already conflicted` });
+    }
+
+    const hashPass = await hashAndValidatePassword(
+        password,
+        Number(process.env.SALT_ROUNDS || 10)
+    );
+    try {
+        const result = await pool.query(
+            'INSERT INTO "user" ("firstName", "lastName", "email", "password") VALUES ($1, $2, $3, $4) RETURNING *',
+            [firstName, lastName, email, hashPass]
+        );
+        const user = result.rows[0];
+        const userConfirmationToken = {
+            id: user.id,
+            email: user.email,
+        };
+
+        try {
+            const token = generateToken(
+                userConfirmationToken,
+                process.env.JWT_SECRET_KEY,
+                "30m"
+            );
+            console.log('token :>> ', token);
+            await sendMailVerification("VERIFICATION_ACCOUNT", {
+                email,
+                token,
+            });
+        } catch (error) {
+            return res.status(500).json(error);
+        }
+
+        delete user.password;
+       return res.status(201).json(user);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+});
+
+app.post("/api/auth/verify", async (req, res) => {
+    const { token } = req.body;
+    const tokenDecode = verifyToken(token, process.env.JWT_SECRET_KEY);
+    await pool.query(
+        'UPDATE "user" SET "isVerified" = $1 WHERE "id" = $2 RETURNING *',
+        [true, tokenDecode.id]
+    );
+    return res.status(200).json({ message: 'Success' })
+});
+
+app.post("/api/auth/resend-verify-email", async (req, res) => {
+    const { email } = req.body;
+    const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
+        email,
+    ]);
+    const user = result.rows[0];
+    if (!user) {
+        return res.status(404).json({ error: `User not found` });
+    }
+
+    const userConfirmationToken = {
+        id: user.id,
+        email: user.email,
+    };
+
+    const token = generateToken(
+        userConfirmationToken,
+        process.env.JWT_SECRET_KEY,
+        "30m"
+    );
+    try {
+        await sendMailVerification("VERIFICATION_ACCOUNT", {
+            email,
+            token,
+        });
+    } catch (error) {
+       return res.status(500).json(error);
+    }
+    return res.status(200).json({
+        message:
+            "Email sent successfully. Please check your email for further instructions.",
+    });
+});
+
+app.post("/api/auth/forgot-password", async (req, res) => {
+    const { email } = req.body;
+    const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
+        email,
+    ]);
+    const user = result.rows[0];
+    if (!user) {
+        return res.status(404).json({ error: `User not found` });
+    }
+
+    const userConfirmationToken = {
+        id: user.id,
+        email: user.email,
+    };
+
+    const token = generateToken(
+        userConfirmationToken,
+        process.env.JWT_SECRET_KEY,
+        "30m"
+    );
+    try {
+        await sendMailVerification("FORGOT_PASSWORD", {
+            email,
+            token,
+        });
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+    return res.status(200).json({
+        message:
+            "Password reset request successfully processed. Please check your email for further instructions.",
+    });
+});
+
+app.post("/api/auth/resend-forgot-password-email", async (req, res) => {
+    const { email } = req.body;
+    const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
+        email,
+    ]);
+    const user = result.rows[0];
+    if (!user) {
+        return res.status(404).json({ error: `User not found` });
+    }
+
+    const userConfirmationToken = {
+        id: user.id,
+        email: user.email,
+    };
+
+    const token = generateToken(
+        userConfirmationToken,
+        process.env.JWT_SECRET_KEY,
+        "30m"
+    );
+    try {
+        await sendMailVerification("FORGOT_PASSWORD", {
+            email,
+            token,
+        });
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+    return res.status(200).json({
+        message:
+            "Password reset request successfully processed. Please check your email for further instructions.",
+    });
+});
+
+app.post("/api/auth/verify-reset-password", async (req, res) => {
+    const { email } = decode(
+        req.headers.authorization?.replace("Bearer ", "") || ""
+    );
+
+    const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
+        email,
+    ]);
+    const user = result.rows[0];
+    if (!user) {
+        return res.status(404).json({ error: `User not found` });
+    }
+    const hashPass = await hashAndValidatePassword(
+        req.body.newPassword,
+        Number(process.env.SALT_ROUNDS || 10)
+    );
+    try {
+        const result = await pool.query(
+            'UPDATE "user" SET "password" = $1 WHERE "id" = $2 RETURNING *',
+            [hashPass, user.id]
+        );
+        const userUpdated = result.rows[0];
+        delete userUpdated.password;
+        return res.status(200).json(userUpdated);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+});
+
+app.get("/api/request-quotes", auth, async (req, res) => {
+    const { user } = req;
+    const result = await pool.query(
+        `
+        SELECT rq.*, json_agg(rqi) AS "requestQuoteItems"
+        FROM "request-quote"  rq
+        LEFT JOIN "request-quote-item"  rqi ON rq.id = rqi."requestQuoteId"
+        WHERE rq."createdById" = $1
+        GROUP BY rq.id, rq."createdAt"
+        ORDER BY rq."createdAt" desc
+    `,
+        [user.id]
+    );
+    return res.status(200).json(result.rows);
+});
+
+app.post("/api/request-quotes", auth, async (req, res) => {
+    const { user } = req;
+    const { name, email, phone, company, address1, address2, items } = req.body;
+    pool.connect(async (err, client, release) => {
+        try {
+            await client.query("BEGIN");
+            const result = await pool.query(
+                'INSERT INTO "request-quote" ("name", "email", "phone", "company", "address1", "address2", "createdById") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [name, email, phone, company, address1, address2, user.id]
+            );
+
+            const requestQuoteCreated = result.rows[0];
+            const itemsInsertPayload = items.map((data) => [
+                data.calibrationType,
+                data.manufacturer,
+                data.modelNo,
+                data.serial,
+                data.calibrationLevel,
+                data.interval,
+                data.qty,
+                data.comment,
+                requestQuoteCreated.id,
+            ]);
+
+            const itemsCreated = await client.query(
+                format(
+                    'INSERT INTO "request-quote-item" ("calibrationType", "manufacturer", "modelNo", "serial", "calibrationLevel", "interval", "qty", "comment", "requestQuoteId") VALUES %L RETURNING *',
+                    itemsInsertPayload
+                )
+            );
+            await client.query("COMMIT");
+            return res
+                .status(201)
+                .json({ ...requestQuoteCreated, requestQuoteItems: itemsCreated.rows });
+        } catch (error) {
+            await client.query("ROLLBACK");
+            return res.status(500).send(error);
+        } finally {
+            release();
+        }
+    });
 });
 
 app.get('/api/get-recent-data', (req, res) => {
@@ -1146,12 +1438,12 @@ app.get('/api/generate-order-certificates', async (req, res) => {
 app.get('/api/generate-return-record', async (req, res) => {
     const orderId = req.query.order_id;
     const print = req.query.print;
-    
+
     pool.query(`SELECT api_order.*, api_batch.calibration_procedure_id, api_technician.first_name, api_technician.last_name, api_sensor.*, api_certificate.generate_certificate_json, api_customer.*
                 FROM api_order
                 JOIN api_customer ON api_order.customer_id = api_customer.customer_id
                 JOIN api_batch ON api_order.order_id = api_batch.order_id
-                JOIN api_sensor ON api_sensor.batch_id = api_batch.batch_id 
+                JOIN api_sensor ON api_sensor.batch_id = api_batch.batch_id
                 JOIN api_certificate ON api_sensor.certificate_id = api_certificate.certificate_id
                 JOIN api_technician ON api_batch.shipping_technician_id = api_technician.technician_id
                 WHERE api_order.order_id = $1;`, [orderId], async (err, result) => {
@@ -1194,7 +1486,7 @@ app.get('/api/generate-return-record', async (req, res) => {
             pool.query(`SELECT api_order.customer_order_number, api_batch.calibration_procedure_id, api_sensor.*, api_certificate.generate_certificate_json
                         FROM api_order
                         JOIN api_batch ON api_order.order_id = api_batch.order_id
-                        JOIN api_sensor ON api_sensor.batch_id = api_batch.batch_id 
+                        JOIN api_sensor ON api_sensor.batch_id = api_batch.batch_id
                         JOIN api_certificate ON api_sensor.certificate_id = api_certificate.certificate_id
                         WHERE api_order.order_id = $1;`, [orderId], async (err, result) => {
                 if (err) {
@@ -1460,4 +1752,80 @@ async function addSensorsToReturnRecord(bytes, sensorList) {
 
     const modifiedPdfBytes = await pdfDoc.save();
     return modifiedPdfBytes;
+}
+
+async function sendMailVerification(type, payload) {
+    try {
+        const { email, token } = payload;
+        const frontEndDomain = process.env.FRONT_END_DOMAIN;
+        let rootUrl = "";
+        let pathFile = "";
+        let subject = "";
+        let messageLog = "";
+
+        switch (type) {
+            case "VERIFICATION_ACCOUNT": {
+                rootUrl = `${frontEndDomain}/auth/verify-email`;
+                pathFile = "./templates/mail/verification-link-template.hbs";
+                subject = "Account verification email";
+                messageLog = `Account verification email has been sent to email ${email} successfully`;
+                break;
+            }
+
+            case "FORGOT_PASSWORD": {
+                rootUrl = `${frontEndDomain}/forgot-password/reset`;
+                pathFile = "./templates/mail/reset-password-template.hbs";
+                subject = "Reset password";
+                messageLog = `Reset password email has been sent to email ${email} successfully`;
+                break;
+            }
+
+            default: {
+                console.warn(`Type ${type} no supported`);
+                return;
+            }
+        }
+
+        const url = `${rootUrl}?token=${token}`;
+        const filePath = path.join(__dirname, pathFile);
+        const source = fs.readFileSync(filePath, "utf-8").toString();
+        const template = handlebars.compile(source);
+        const replacements = {
+            email,
+            url,
+        };
+        const htmlToSend = template(replacements);
+        const message = {
+            to: email,
+            from: {
+                name: "Sensorcalibrations",
+                email: process.env.MAIL,
+            },
+            subject,
+            html: htmlToSend,
+        };
+        const result = await sgMail.send(message);
+        return result;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+
+function auth(req, res, next) {
+    const token = req.header("Authorization");
+    if (!token || !token.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const authToken = token.split(" ")[1];
+    try {
+        const user = verifyToken(authToken, process.env.JWT_SECRET_KEY);
+        if (!user) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(401).json(error);
+    }
 }
