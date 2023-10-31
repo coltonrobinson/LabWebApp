@@ -1756,7 +1756,7 @@ async function addSensorsToReturnRecord(bytes, sensorList) {
 async function sendMailVerification(type, payload) {
     try {
         const { email, token } = payload;
-        const frontEndDomain = process.env.FONT_END_DOMAIN;
+        const frontEndDomain = process.env.FRONT_END_DOMAIN;
         let rootUrl = "";
         let pathFile = "";
         let subject = "";
