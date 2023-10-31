@@ -50,6 +50,8 @@ pool.connect((err, client, release) => {
     console.log('Connected to database!');
     release();
 })
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const app = express();
 const port = 8000;
 app.locals.pool = pool;
@@ -60,6 +62,8 @@ app.use(express.urlencoded({ extended: true }));
 app.listen(port, ip, () => {
     console.log(`Server running at http://${ip}:${port}/`);
 });
+
+
 
 app.post("/api/auth/sign-in", async (req, res) => {
     const { email, password } = req.body;
@@ -122,6 +126,7 @@ app.post("/api/auth/sign-up", async (req, res) => {
                 process.env.JWT_SECRET_KEY,
                 "30m"
             );
+            console.log('token :>> ', token);
             await sendMailVerification("VERIFICATION_ACCOUNT", {
                 email,
                 token,
@@ -1803,7 +1808,7 @@ async function sendMailVerification(type, payload) {
             subject,
             html: htmlToSend,
         };
-        const result = await sgMailClient.send(message);
+        const result = await sgMail.send(message);
         return result;
     } catch (e) {
         console.error(e);
