@@ -252,7 +252,7 @@ app.post("/api/auth/resend-forgot-password-email", async (req, res) => {
     });
 });
 
-app.get("/api/auth/verify-reset-password", async (req, res) => {
+app.post("/api/auth/verify-reset-password", async (req, res) => {
     const { email } = decode(
         req.headers.authorization?.replace("Bearer ", "") || ""
     );
