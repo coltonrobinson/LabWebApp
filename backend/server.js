@@ -63,8 +63,6 @@ app.listen(port, ip, () => {
     console.log(`Server running at http://${ip}:${port}/`);
 });
 
-
-
 app.post("/api/auth/sign-in", async (req, res) => {
     const { email, password } = req.body;
     const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
@@ -132,20 +130,19 @@ app.post("/api/auth/sign-up", async (req, res) => {
                 token,
             });
         } catch (error) {
-            res.status(500).json(error);
+            return res.status(500).json(error);
         }
 
         delete user.password;
-        res.status(201).json(user);
+       return res.status(201).json(user);
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
 });
 
 app.post("/api/auth/verify", async (req, res) => {
     const { token } = req.body;
     const tokenDecode = verifyToken(token, process.env.JWT_SECRET_KEY);
-    console.log('tokenDecode :>> ', tokenDecode);
     await pool.query(
         'UPDATE "user" SET "isVerified" = $1 WHERE "id" = $2 RETURNING *',
         [true, tokenDecode.id]
@@ -179,9 +176,9 @@ app.post("/api/auth/resend-verify-email", async (req, res) => {
             token,
         });
     } catch (error) {
-        res.status(500).json(error);
+       return res.status(500).json(error);
     }
-    res.status(200).json({
+    return res.status(200).json({
         message:
             "Email sent successfully. Please check your email for further instructions.",
     });
@@ -213,9 +210,9 @@ app.post("/api/auth/forgot-password", async (req, res) => {
             token,
         });
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
-    res.status(200).json({
+    return res.status(200).json({
         message:
             "Password reset request successfully processed. Please check your email for further instructions.",
     });
@@ -247,16 +244,15 @@ app.post("/api/auth/resend-forgot-password-email", async (req, res) => {
             token,
         });
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
-    res.status(200).json({
+    return res.status(200).json({
         message:
             "Password reset request successfully processed. Please check your email for further instructions.",
     });
 });
 
 app.get("/api/auth/verify-reset-password", async (req, res) => {
-    console.log("req.headers :>> ", req.headers);
     const { email } = decode(
         req.headers.authorization?.replace("Bearer ", "") || ""
     );
@@ -279,9 +275,9 @@ app.get("/api/auth/verify-reset-password", async (req, res) => {
         );
         const userUpdated = result.rows[0];
         delete userUpdated.password;
-        res.status(200).json(userUpdated);
+        return res.status(200).json(userUpdated);
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
 });
 
@@ -308,8 +304,8 @@ app.post("/api/request-quotes", auth, async (req, res) => {
         try {
             await client.query("BEGIN");
             const result = await pool.query(
-                'INSERT INTO "request-quote" ("name", "email", "phone", "company", "address1", "address2") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-                [name, email, phone, company, address1, address2]
+                'INSERT INTO "request-quote" ("name", "email", "phone", "company", "address1", "address2", "createdById") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [name, email, phone, company, address1, address2, user.id]
             );
 
             const requestQuoteCreated = result.rows[0];
@@ -337,7 +333,7 @@ app.post("/api/request-quotes", auth, async (req, res) => {
                 .json({ ...requestQuoteCreated, requestQuoteItems: itemsCreated.rows });
         } catch (error) {
             await client.query("ROLLBACK");
-            res.status(500).send(error);
+            return res.status(500).send(error);
         } finally {
             release();
         }
