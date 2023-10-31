@@ -28,6 +28,22 @@ function SignInBox() {
         temporaryTechnicianName = event.target.value;
     }
 
+    const handleClick = () => {
+        setTechnicianId(0);
+        setIsSignedIn(false);
+        if (isSignedIn) {
+            setIsSignInBoxDisplayed(false);
+            setTechnicianName('');
+        } else {
+            setIsSignInBoxDisplayed(true);
+            setTechnicianName(technicianName);
+        } 
+    }
+
+    const toggleDisplay = () => {
+        isSignInBoxDisplayed ? setIsSignInBoxDisplayed(false) : setIsSignInBoxDisplayed(true)
+    }
+
     const handleSubmit = (event) => {
         if (temporaryTechnicianName !== undefined) {
             callApi('lookup-technician', { 'technician': temporaryTechnicianName })
@@ -62,14 +78,14 @@ function SignInBox() {
         return (
             <div className={styles.sign_in_container}>
                 <div className={styles.technician_name}>{technicianName.split(' ')[0]}</div>
-                <button className={styles.sign_in_button} onClick={() => { setTechnicianId(0); setIsSignedIn(false); setIsSignInBoxDisplayed(isSignedIn ? false : true); setTechnicianName(isSignedIn ? '' : technicianName) }}>{buttonText}</button>
+                <button className={styles.sign_in_button} onClick={handleClick}>{buttonText}</button>
             </div>
         );
     } else {
         return (
             <div className={styles.sign_in_container}>
                 <div className={styles.technician_name}>{technicianName.split(' ')[0]}</div>
-                <button className={styles.sign_in_button} onClick={() => setIsSignInBoxDisplayed(isSignInBoxDisplayed ? false : true)}>{buttonText}</button>
+                <button className={styles.sign_in_button} onClick={toggleDisplay}>{buttonText}</button>
                 <div className={styles.pop_up}>
                     <form onSubmit={handleSubmit}>
                         <input type='text' value={temporaryTechnicianName} onChange={handleChange} className={styles.pop_up_content} placeholder='Name' />

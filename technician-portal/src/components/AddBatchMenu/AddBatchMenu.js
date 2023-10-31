@@ -123,7 +123,7 @@ function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches
                 <form onSubmit={handleAddSensor} data-testid={'addSensorForm'}>
                     <input type='text' value={sensor} onChange={event => setSensor(event.target.value)} className={styles.default_text_box} placeholder={'Sensor ID:Check Digit'} />
                 </form>
-                <form onSubmit={handleSetLocation}>
+                <form onSubmit={handleSetLocation} data-testid={'setLocationForm'} >
                     <input type='text' value={location} onChange={event => setLocation(event.target.value)} className={styles.default_text_box} placeholder={'Location'} />
                 </form>
                 <ScannedSensors sensorList={sensors} />

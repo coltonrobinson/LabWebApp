@@ -53,13 +53,13 @@ function BatchEntry() {
                     for (const order of orders) {
                         const batches = [...new Set(response.filter(batch => batch.order_id === order))].sort((a, b) => b - a);
                         batchList.push(
-                            <>
-                                <h1 key={batches[0].order_id} className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
-                                {batches.map(batch => {
-                                    return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} />
+                            <div key={orders.indexOf(order)}>
+                                <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
+                                {batches.map((batch, index) => {
+                                    return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} key={index} />
                                 })}
                                 <hr />
-                            </>
+                            </div>
                         )
                     }
 
@@ -83,17 +83,13 @@ function BatchEntry() {
         if (parseInt(batchNumber)) {
             callApi('get-batch-by-id', { 'batch_id': batchNumber })
                 .then(batch => {
-                    if (technicianId) {
-                        callApi('update-batch-technician', { 'department': 'testing', 'technician_id': technicianId, 'batch_id': batch.batch_id })
-                        setProcedureId(batch.calibration_procedure_id);
-                        callApi('get-sensors', { 'batch_id': batchNumber })
-                            .then(data => {
-                                setSensorList(data);
-                            })
-                        navigate('/manageBatch');
-                    } else {
-                        setPopupMessage('Please sign in');
-                    }
+                    callApi('update-batch-technician', { 'department': 'testing', 'technician_id': technicianId, 'batch_id': batch.batch_id })
+                    setProcedureId(batch.calibration_procedure_id);
+                    callApi('get-sensors', { 'batch_id': batchNumber })
+                        .then(data => {
+                            setSensorList(data);
+                        })
+                    navigate('/manageBatch');
                 })
         } else {
             setPopupMessage('Batch must be a number')
@@ -105,8 +101,8 @@ function BatchEntry() {
     }
 
     return (
-        <div className={styles.menu}>
-            <form onSubmit={handleSubmit}>
+        <div className={styles.menu} >
+            <form onSubmit={handleSubmit} data-testid={'batchForm'} >
                 <input type='text' value={batchNumber} onChange={handleChange} className={styles.default_text_box} placeholder={'Batch Number'} />
                 <button type='submit' className={styles.default_button}>Submit</button>
             </form>

@@ -14,12 +14,11 @@ const addSensor = async (sensor, batchId) => {
   
     try {
       const response = await callApi('create-sensor', parameters);
-      if (!response[0]['sensor_id'] || typeof response[0]['sensor_id'] === 'undefined') {
+      if (!response[0]['sensor_id']) {
         return false;
       }
       return true;
     } catch (error) {
-      console.error(error);
       return false;
     }
   }

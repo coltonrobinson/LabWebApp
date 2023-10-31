@@ -172,7 +172,6 @@ function ManageBatch() {
         const promises = [];
         for (const sensor of sensorList) {
             try {
-                console.log(sensor)
                 promises.push(callApi('change-sensor-heartbeat', { sensor_id: sensor.sensor_id, heartbeat: heartbeat }));
             } catch (error) {
                 console.error(error);
@@ -293,11 +292,11 @@ function ManageBatch() {
                 <div className={styles.grid_menu}>
                     <h1 className={styles.title}>{'Batch: ' + batchNumber + (currentLocation ? ` | Current location: ${currentLocation}` : ` | No location set`)}</h1>
                     <button className={styles.default_button} onClick={() => navigate('/batchEntry')}>Change batch</button>
-                    <form onSubmit={handleLocationSubmit}>
+                    <form onSubmit={handleLocationSubmit} data-testid={'locationForm'}>
                         <input type='text' value={location} onChange={handleLocationChange} className={styles.default_text_box} placeholder={'Location'} />
                     </form>
                     <button className={styles.default_button} onClick={downloadWorkOrder}>Download work order</button>
-                    <form onSubmit={handleHeartBeatSubmit} data-testid={'heartbeatEntryForm'}>
+                    <form onSubmit={handleHeartBeatSubmit} data-testid={'heartbeatForm'}>
                         <input type='text' value={heartbeat} onChange={handleHeartBeatChange} className={styles.default_text_box} placeholder={'Heartbeat'} />
                     </form>
                     <button className={styles.default_button} onClick={printWorkOrder}>Print work order</button>
