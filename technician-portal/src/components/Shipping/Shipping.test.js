@@ -19,7 +19,7 @@ beforeEach(() => {
     mockAxios.get.mockImplementation(url => {
         switch (url) {
             case `http://${ip}:8000/api/get-certificates-by-order-id/`:
-                return Promise.resolve({ data: [{ certificate_id: 1 }] })
+                return Promise.resolve({ data: [{ certificate_id: 1, generate_certificate_json: { CS1: '1/1/1970', CS2: '1/1/1970' } }] })
             case `http://${ip}:8000/api/get-order-by-id/`:
                 return Promise.resolve({ data: { order_id: 1, customer_id: 1 } })
             case `http://${ip}:8000/api/get-sensors-by-order-id/`:
@@ -88,64 +88,64 @@ for (let i = 1; i <= 5; i++) {
                         return Promise.resolve({
                             data: [
                                 {
-                                    "equipment_id":19,
-                                    "asset_tag":"S000119",
-                                    "description":"Rotronic HygroClip2 Humidity Reference",
-                                    "last_calibration":"2023-01-11T07:00:00.000Z",
-                                    "next_calibration":"2024-02-10T07:00:00.000Z",
-                                    "calibration_certificate_number":"99-0494160502",
-                                    "type":"Reference",
-                                    "serial_number":"20657711"
+                                    "equipment_id": 19,
+                                    "asset_tag": "S000119",
+                                    "description": "Rotronic HygroClip2 Humidity Reference",
+                                    "last_calibration": "2023-01-11T07:00:00.000Z",
+                                    "next_calibration": "2024-02-10T07:00:00.000Z",
+                                    "calibration_certificate_number": "99-0494160502",
+                                    "type": "Reference",
+                                    "serial_number": "20657711"
                                 },
                                 {
-                                    "equipment_id":5,
-                                    "asset_tag":"S000105",
-                                    "description":"Rotronic HygroClip2 Humidity Reference",
-                                    "last_calibration":"2023-01-11T07:00:00.000Z",
-                                    "next_calibration":"2024-02-10T07:00:00.000Z",
-                                    "calibration_certificate_number":"99-0494160502",
-                                    "type":"Reference",
-                                    "serial_number":"20657711"
+                                    "equipment_id": 5,
+                                    "asset_tag": "S000105",
+                                    "description": "Rotronic HygroClip2 Humidity Reference",
+                                    "last_calibration": "2023-01-11T07:00:00.000Z",
+                                    "next_calibration": "2024-02-10T07:00:00.000Z",
+                                    "calibration_certificate_number": "99-0494160502",
+                                    "type": "Reference",
+                                    "serial_number": "20657711"
                                 },
                                 {
-                                    "equipment_id":14,
-                                    "asset_tag":"S000114",
-                                    "description":"Rotronic HygroClip2 Humidity Reference",
-                                    "last_calibration":"2023-01-11T07:00:00.000Z",
-                                    "next_calibration":"2024-02-10T07:00:00.000Z",
-                                    "calibration_certificate_number":"99-0494160502",
-                                    "type":"Reference",
-                                    "serial_number":"20657711"
+                                    "equipment_id": 14,
+                                    "asset_tag": "S000114",
+                                    "description": "Rotronic HygroClip2 Humidity Reference",
+                                    "last_calibration": "2023-01-11T07:00:00.000Z",
+                                    "next_calibration": "2024-02-10T07:00:00.000Z",
+                                    "calibration_certificate_number": "99-0494160502",
+                                    "type": "Reference",
+                                    "serial_number": "20657711"
                                 },
                                 {
-                                    "equipment_id":15,
-                                    "asset_tag":"S000115",
-                                    "description":"Rotronic HygroClip2 Humidity Reference",
-                                    "last_calibration":"2023-01-11T07:00:00.000Z",
-                                    "next_calibration":"2024-02-10T07:00:00.000Z",
-                                    "calibration_certificate_number":"99-0494160502",
-                                    "type":"Reference",
-                                    "serial_number":"20657711"
+                                    "equipment_id": 15,
+                                    "asset_tag": "S000115",
+                                    "description": "Rotronic HygroClip2 Humidity Reference",
+                                    "last_calibration": "2023-01-11T07:00:00.000Z",
+                                    "next_calibration": "2024-02-10T07:00:00.000Z",
+                                    "calibration_certificate_number": "99-0494160502",
+                                    "type": "Reference",
+                                    "serial_number": "20657711"
                                 },
                                 {
-                                    "equipment_id":16,
-                                    "asset_tag":"S000116",
-                                    "description":"Rotronic HygroClip2 Humidity Reference",
-                                    "last_calibration":"2023-01-11T07:00:00.000Z",
-                                    "next_calibration":"2024-02-10T07:00:00.000Z",
-                                    "calibration_certificate_number":"99-0494160502",
-                                    "type":"Reference",
-                                    "serial_number":"20657711"
+                                    "equipment_id": 16,
+                                    "asset_tag": "S000116",
+                                    "description": "Rotronic HygroClip2 Humidity Reference",
+                                    "last_calibration": "2023-01-11T07:00:00.000Z",
+                                    "next_calibration": "2024-02-10T07:00:00.000Z",
+                                    "calibration_certificate_number": "99-0494160502",
+                                    "type": "Reference",
+                                    "serial_number": "20657711"
                                 },
                                 {
-                                    "equipment_id":20,
-                                    "asset_tag":"S000120",
-                                    "description":"Rotronic HygroClip2 Humidity Reference",
-                                    "last_calibration":"2023-01-11T07:00:00.000Z",
-                                    "next_calibration":"2024-02-10T07:00:00.000Z",
-                                    "calibration_certificate_number":"99-0494160502",
-                                    "type":"Reference",
-                                    "serial_number":"20657711"
+                                    "equipment_id": 20,
+                                    "asset_tag": "S000120",
+                                    "description": "Rotronic HygroClip2 Humidity Reference",
+                                    "last_calibration": "2023-01-11T07:00:00.000Z",
+                                    "next_calibration": "2024-02-10T07:00:00.000Z",
+                                    "calibration_certificate_number": "99-0494160502",
+                                    "type": "Reference",
+                                    "serial_number": "20657711"
                                 },
                             ]
                         })
@@ -285,3 +285,65 @@ for (let i = 1; i <= 5; i++) {
         expect(orderLabel).toBeInTheDocument()
     })
 }
+
+test('printing certificates doesn\'t generate errors', async () => {
+    await act(async () => {
+        render(
+            <AppWrapper sharedState={{
+                setConfirmationMessage: jest.fn(), technicianId: 1, setPopupMessage: jest.fn(),
+                orderNumber: 1, batches: [{ batch_id: 1 }]
+            }}>
+                <Shipping />
+            </AppWrapper>
+        )
+    })
+    const generateCertificatesButton = screen.getByText(/print certificates/i)
+    await act(async () => {
+        fireEvent.click(generateCertificatesButton)
+    })
+    expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/generate-order-certificates/`, { "params": { "order_id": 1, "print": true } })
+})
+
+test('printing labels doesn\'t generate errors', async () => {
+    await act(async () => {
+        render(
+            <AppWrapper sharedState={{
+                setConfirmationMessage: jest.fn(), technicianId: 1, setPopupMessage: jest.fn(),
+                orderNumber: 1, batches: [{ batch_id: 1 }]
+            }}>
+                <Shipping />
+            </AppWrapper>
+        )
+    })
+    const generateCertificatesButton = screen.getByText(/print all labels/i)
+    await act(async () => {
+        fireEvent.click(generateCertificatesButton)
+    })
+    expect(mockAxios.get).toBeCalledWith(`http://${ip}:8000/api/print-certificate-labels/`, { "params": { "calibration_date": '1/1/1970', "certificate_number": 'MNT-1', 'due_date': '1/1/1970' } })
+})
+
+test('printing labels with no certificates throws error', async () => {
+    mockAxios.get.mockImplementation(url => {
+        switch (url) {
+            case `http://${ip}:8000/api/get-certificates-by-order-id/`:
+                return Promise.resolve({ data: [] })
+            default:
+                return Promise.reject();
+        }
+    });
+    await act(async () => {
+        render(
+            <AppWrapper sharedState={{
+                setConfirmationMessage: jest.fn(), technicianId: 1, setPopupMessage: jest.fn(),
+                orderNumber: 1, batches: [{ batch_id: 1 }]
+            }}>
+                <Shipping />
+            </AppWrapper>
+        )
+    })
+    const generateCertificatesButton = screen.getByText(/print all labels/i)
+    await act(async () => {
+        fireEvent.click(generateCertificatesButton)
+    })
+    expect(mockAxios.get).not.toBeCalledWith(`http://${ip}:8000/api/print-certificate-labels/`, expect.anything())
+})
