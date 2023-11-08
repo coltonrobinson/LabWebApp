@@ -240,7 +240,6 @@ function TestingMenu({ setPoints }) {
         const setPoint = setPointObject.temperature;
         const readings = await getStableTemperatureReading(sensorList, setPointObject, referenceAssetID);
         const labReadings = await callApi('get-recent-data');
-
         for (const sensor of sensorList) {
             if (selectedSensor.current && sensor.sensor_id !== parseInt(selectedSensor.current)) {
                 continue;
