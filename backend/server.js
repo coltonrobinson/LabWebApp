@@ -55,7 +55,9 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const app = express();
 const port = 8000;
 app.locals.pool = pool;
-app.use(cors());
+app.use(cors({
+    origin: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
