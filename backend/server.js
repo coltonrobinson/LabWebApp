@@ -58,6 +58,7 @@ app.locals.pool = pool;
 app.use(cors({
     origin: 'https://sensorcalibrations.com/'
 }));
+app.options('*', cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -96,6 +97,7 @@ app.post("/api/auth/sign-in", async (req, res) => {
     res.setHeader("refresh-token", refreshToken);
     res.status(200).json(user);
 });
+
 app.post("/api/auth/sign-up", async (req, res) => {
     const { email, password, lastName, firstName } = req.body;
     const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [
