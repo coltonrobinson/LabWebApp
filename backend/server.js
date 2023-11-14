@@ -56,7 +56,7 @@ const app = express();
 const port = 8000;
 app.locals.pool = pool;
 app.use(cors({
-    origin: 'https://sensorcalibrations.com/'
+    origin: '*'
 }));
 app.options('*', cors())
 app.use(express.json());
