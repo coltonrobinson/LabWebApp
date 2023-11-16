@@ -69,7 +69,7 @@ app.listen(port, ip, () => {
 });
 
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'https://api.sensorcalibrations.com/');
+  res.header('Access-Control-Allow-Origin', 'https://sensorcalibrations.com/');
   res.header('Access-Control-Allow-Headers', true);
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
