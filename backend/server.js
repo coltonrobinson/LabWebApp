@@ -56,7 +56,9 @@ const app = express();
 const port = 8000;
 app.locals.pool = pool;
 app.use(cors({
-    origin: '*'
+    origin: '*',
+    optionsSuccessStatus: 200,
+    credentials: true
 }));
 app.options('*', cors())
 app.use(express.json());
@@ -64,6 +66,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.listen(port, ip, () => {
     console.log(`Server running at http://${ip}:${port}/`);
+});
+
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'https://api.sensorcalibrations.com/');
+  res.header('Access-Control-Allow-Headers', true);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  next();
 });
 
 app.post("/api/auth/sign-in", async (req, res) => {
@@ -1459,7 +1469,7 @@ app.get('/api/generate-return-record', async (req, res) => {
 
         if (!result.rows[0]) {
             console.error('Unable to find data');
-            return res.json({ 'Result': 'Unable to find data' });
+            return res.status(500).json({ 'Result': 'Unable to find data' });
         } else {
             data = result.rows[0];
             let date;
