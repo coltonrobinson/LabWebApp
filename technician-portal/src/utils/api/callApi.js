@@ -2,7 +2,7 @@ import axios from 'axios';
 import ip from '../ip/ip';
 
 async function callApi(endPoint, parameters) {
-  const url = `http://${ip}:8000/api/${endPoint}/`;
+  const url = `http://${ip}/api/${endPoint}/`;
 
   try {
     const response = await axios.get(url, { params: parameters });
