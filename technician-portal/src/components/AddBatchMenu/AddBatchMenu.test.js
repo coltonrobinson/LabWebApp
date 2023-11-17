@@ -13,13 +13,13 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/create-sensor/`:
+            case `http://${ip}/api/create-sensor/`:
                 return Promise.resolve({ data: [{ sensor_id: 1 }] })
-            case `http://${ip}:8000/api/create-location-log/`:
+            case `http://${ip}/api/create-location-log/`:
                 return Promise.resolve({ data: { Result: 'success' } })
-            case `http://${ip}:8000/api/get-online-sensors/`:
+            case `http://${ip}/api/get-online-sensors/`:
                 return Promise.resolve({ data: [12345] })
-            case `http://${ip}:8000/api/delete-batch/`:
+            case `http://${ip}/api/delete-batch/`:
                 return Promise.resolve({ data: [12345] })
             default:
                 return Promise.reject()
@@ -119,7 +119,7 @@ test('adding invalid sensor gets rejected', async () => {
         </AppWrapper>
     )
     await inputSensor()
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/create-sensor/", { "params": { "batch_id": 3000, "check_digit": "ABCDE", "sensor_id": "12345" } })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/create-sensor/", { "params": { "batch_id": 3000, "check_digit": "ABCDE", "sensor_id": "12345" } })
 })
 
 test('submitting location without location doesn\'t call api', async () => {
@@ -139,8 +139,8 @@ test('submitting location starting with "R" creates location log and logs recevi
         </AppWrapper>
     )
     await inputLocation('R-STD')
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/create-location-log/", { "params": { "batch_id": 3000, "location": "R-STD" } })
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/log-batch-interaction/", { "params": { "department": "receiving", "start": false, "technician_id": 1, "batch_id": 3000 } })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/create-location-log/", { "params": { "batch_id": 3000, "location": "R-STD" } })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/log-batch-interaction/", { "params": { "department": "receiving", "start": false, "technician_id": 1, "batch_id": 3000 } })
 })
 
 test('submitting location starting with "T" creates location log and logs testing', async () => {
@@ -150,8 +150,8 @@ test('submitting location starting with "T" creates location log and logs testin
         </AppWrapper>
     )
     await inputLocation('T-STD')
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/create-location-log/", { "params": { "batch_id": 3000, "location": "T-STD" } })
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/log-batch-interaction/", { "params": { "department": "testing", "start": true, "technician_id": 1, "batch_id": 3000 } })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/create-location-log/", { "params": { "batch_id": 3000, "location": "T-STD" } })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/log-batch-interaction/", { "params": { "department": "testing", "start": true, "technician_id": 1, "batch_id": 3000 } })
 })
 
 test('invalid location does not create log', async () => {
@@ -177,7 +177,7 @@ test('checkStatus called after 4 seconds', async () => {
     await act(async () => {
         jest.advanceTimersByTime(4000);
     })
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/get-online-sensors/", { "params": undefined })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/get-online-sensors/", { "params": undefined })
 })
 
 test('removing batch creates popup and removes batch', async () => {
@@ -195,5 +195,5 @@ test('removing batch creates popup and removes batch', async () => {
     await act(async () => {
         fireEvent.click(confirmButton)
     })
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/delete-batch/", { "params": { "batch_id": 3000 } })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/delete-batch/", { "params": { "batch_id": 3000 } })
 })

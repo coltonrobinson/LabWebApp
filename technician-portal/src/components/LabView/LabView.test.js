@@ -12,9 +12,9 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/get-recent-data/`:
+            case `http://${ip}/api/get-recent-data/`:
                 return Promise.resolve({ data: [{ timestamp: new Date().toString() }] })
-            case `http://${ip}:8000/api/get-equipment/`:
+            case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ "equipment_id": 10001 }] })
             default:
                 return Promise.reject()
@@ -41,7 +41,7 @@ it('renders equipment box for each reference', async () => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/get-recent-data/`:
+            case `http://${ip}/api/get-recent-data/`:
                 return Promise.resolve({
                     data: [{
                         rotronic_data: {
@@ -110,7 +110,7 @@ it('renders equipment box for each reference', async () => {
                         }
                     }]
                 })
-            case `http://${ip}:8000/api/get-equipment/`:
+            case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({
                     data: [
                         {
@@ -162,9 +162,9 @@ test('status_dot with 60 second timestamp should be yellow', async () => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/get-recent-data/`:
+            case `http://${ip}/api/get-recent-data/`:
                 return Promise.resolve({ data: [{ timestamp: new Date(new Date() - 60000).toString() }] })
-            case `http://${ip}:8000/api/get-equipment/`:
+            case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ "equipment_id": 10001 }] })
             default:
                 return Promise.reject()
@@ -185,9 +185,9 @@ test('status_dot with 130 second timestamp should be red', async () => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/get-recent-data/`:
+            case `http://${ip}/api/get-recent-data/`:
                 return Promise.resolve({ data: [{ timestamp: new Date(new Date() - 130000).toString() }] })
-            case `http://${ip}:8000/api/get-equipment/`:
+            case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ "equipment_id": 10001 }] })
             default:
                 return Promise.reject()

@@ -20,7 +20,7 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/create-order/`:
+            case `http://${ip}/api/create-order/`:
                 return Promise.resolve({ data: [{ order_id: 1, customer_order_number: 'test' }] })
             default:
                 return Promise.reject();

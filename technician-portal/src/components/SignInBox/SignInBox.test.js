@@ -22,7 +22,7 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/lookup-technician/`:
+            case `http://${ip}/api/lookup-technician/`:
                 return Promise.resolve({ data: [{ technician_id: 1 }] })
             default:
                 return Promise.reject();
@@ -74,5 +74,5 @@ test('toggle sign in and out throws no errors', async () => {
     await act(async () => {
         fireEvent.click(signOutButton)
     })
-    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/lookup-technician/", {"params": {"technician": "Test"}})
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1/api/lookup-technician/", {"params": {"technician": "Test"}})
 })

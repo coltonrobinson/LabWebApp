@@ -13,9 +13,9 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}:8000/api/get-calibrations-by-month/`:
+            case `http://${ip}/api/get-calibrations-by-month/`:
                 return Promise.resolve({ data: [{ order_id: 10000 }, { order_id: 10001 }] })
-            case `http://${ip}:8000/api/get-calibration-procedures/`:
+            case `http://${ip}/api/get-calibration-procedures/`:
                 return Promise.resolve({ data: [{ calibration_procedure_id: 10001 }] })
             default:
                 return Promise.reject()
