@@ -295,6 +295,22 @@ app.post("/api/auth/verify-reset-password", async (req, res) => {
     }
 });
 
+app.get("/api/users/me", auth, async (req, res) => {
+    const { user } = req;
+    const result = await pool.query(
+        `
+        SELECT "id", "firstName", "lastName", "email", "phone", "shippingAddress", "city", "state", "country", "zipCode", "type"
+        FROM "user"  WHERE id = $1 LIMIT 1
+    `,
+        [user.id]
+    );
+    if (result.rows.length === 0) {
+        return res.status(404).json({ error : 'User not found' });
+    }
+
+    return res.status(200).json(result.rows[0]);
+});
+
 app.get("/api/request-quotes", auth, async (req, res) => {
     const { user } = req;
     const result = await pool.query(
