@@ -114,7 +114,7 @@ app.post("/api/auth/sign-up", async (req, res) => {
         email,
     ]);
     if (result.rows[0]) {
-        return res.status(409).json({ error: `User has already conflicted` });
+        return res.status(409).json({ error: `User with that email already exists` });
     }
 
     const hashPass = await hashAndValidatePassword(
