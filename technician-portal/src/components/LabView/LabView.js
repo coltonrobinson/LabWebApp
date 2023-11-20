@@ -10,7 +10,9 @@ function LabView() {
     const [equipmentList, setEquipmentList] = useState([])
 
     const setAggregatorStyle = (data) => {
-        const secondsAgo = (new Date() - new Date(data.timestamp)) / 1000;
+        let now = new Date()
+        now = now.setHours(now.getHours() - 7)
+        const secondsAgo = (now - new Date(data.timestamp)) / 1000;
         if (secondsAgo <= 30) {
             setAggregatorStatusDotStyle(styles.status_dot_green);
         } else if (secondsAgo > 120) {
