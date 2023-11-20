@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REACT_APP_STATUS: "testing"
-      REACT_APP_DEV_IP: "127.0.0.1"
+      REACT_APP_DEV_IP: "127.0.0.1:8000"
     defaults:
       run:
         working-directory: ./technician-portal/
