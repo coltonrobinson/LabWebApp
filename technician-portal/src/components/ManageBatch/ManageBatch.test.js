@@ -170,7 +170,7 @@ const testChangeSensorHeartbeat = async (sensorId, heartbeatValue) => {
     });
 
     expect(heartbeatBox).toHaveValue('');
-    expect(mockAxios.get).toBeCalledWith(`http://127.0.0.1/api/change-sensor-heartbeat/`, {
+    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/change-sensor-heartbeat/`, {
         'params': { 'sensor_id': sensorId, 'heartbeat': heartbeatValue }
     });
 };
@@ -205,7 +205,7 @@ const testChangeLocation = async (sensorId, locationValue, batchId) => {
     });
 
     expect(locationBox).toHaveValue('');
-    expect(mockAxios.get).toBeCalledWith(`http://127.0.0.1/api/create-location-log/`, {
+    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/create-location-log/`, {
         'params': { 'location': locationValue, 'batch_id': batchId }
     });
 };

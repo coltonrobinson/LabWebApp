@@ -83,7 +83,7 @@ test('pressing set point button creates reading', async () => {
         fireEvent.click(setPointButton)
     })
     expect(mockSetSensorGrid).toBeCalledTimes(2)
-    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1/api/create-reading/', expect.anything())
+    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/create-reading/', expect.anything())
 })
 
 test('no stable data throws error', async () => {
@@ -102,7 +102,7 @@ test('no stable data throws error', async () => {
     await act(async () => {
         fireEvent.click(setPointButton)
     })
-    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1/api/create-reading/', expect.anything())
+    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/create-reading/', expect.anything())
 })
 
 test('no readings throws error', async () => {
@@ -138,7 +138,7 @@ test('no readings throws error', async () => {
     await act(async () => {
         fireEvent.click(setPointButton)
     })
-    expect(mockAxios.get).not.toBeCalledWith('http://127.0.0.1/api/create-reading/', expect.anything())
+    expect(mockAxios.get).not.toBeCalledWith('http://127.0.0.1:8000/api/create-reading/', expect.anything())
 })
 
 test('pressing humidity set point button creates reading', async () => {
@@ -157,5 +157,5 @@ test('pressing humidity set point button creates reading', async () => {
     await act(async () => {
         fireEvent.click(setPointButton)
     })
-    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1/api/create-reading/', expect.anything())
+    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/create-reading/', expect.anything())
 })

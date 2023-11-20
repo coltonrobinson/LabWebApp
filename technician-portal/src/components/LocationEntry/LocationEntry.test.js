@@ -53,7 +53,7 @@ test('submit with shipping location calls batch interaction', () => {
         </AppWrapper>
     )
     submit('S-1234')
-    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1/api/create-location-log/', { "params": { "batch_id": 1, "location": "S-1234" } })
+    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/create-location-log/', { "params": { "batch_id": 1, "location": "S-1234" } })
 })
 
 test('submit with testing location calls batch interaction', () => {
@@ -63,7 +63,7 @@ test('submit with testing location calls batch interaction', () => {
         </AppWrapper>
     )
     submit('T-1234')
-    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1/api/create-location-log/', { "params": { "batch_id": 1, "location": "T-1234" } })
+    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/create-location-log/', { "params": { "batch_id": 1, "location": "T-1234" } })
 })
 
 test('submit with incorrect location calls console.error', async () => {

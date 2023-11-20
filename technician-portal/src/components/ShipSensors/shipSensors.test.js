@@ -57,7 +57,7 @@ test('submit navigates and sets shipped', async () => {
     })
     fireEvent.click(selectAll)
     fireEvent.click(submitButton)
-    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1/api/set-order-shipped/', {"params": {"name": "test name", "order_id": 1}})
+    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/set-order-shipped/', {"params": {"name": "test name", "order_id": 1}})
     expect(mockedUseNavigate).toBeCalledWith('/')
 })
 

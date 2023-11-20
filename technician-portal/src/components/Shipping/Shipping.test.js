@@ -281,7 +281,7 @@ for (let i = 1; i <= 5; i++) {
         await act(async () => {
             fireEvent.click(generateCertificatesButton)
         })
-        expect(mockAxios.get).toBeCalledWith('http://127.0.0.1/api/create-certificate/', expect.anything())
+        expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/create-certificate/', expect.anything())
         expect(orderLabel).toBeInTheDocument()
     })
 }

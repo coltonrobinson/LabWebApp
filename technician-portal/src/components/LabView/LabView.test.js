@@ -163,7 +163,9 @@ test('status_dot with 60 second timestamp should be yellow', async () => {
     mockAxios.get.mockImplementation(url => {
         switch (url) {
             case `http://${ip}/api/get-recent-data/`:
-                return Promise.resolve({ data: [{ timestamp: new Date(new Date() - 60000).toString() }] })
+                let timestamp = new Date()
+                timestamp = timestamp.setHours(timestamp.getHours() - 7)
+                return Promise.resolve({ data: [{ timestamp: (timestamp - 60000) }] })
             case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ "equipment_id": 10001 }] })
             default:
@@ -186,7 +188,9 @@ test('status_dot with 130 second timestamp should be red', async () => {
     mockAxios.get.mockImplementation(url => {
         switch (url) {
             case `http://${ip}/api/get-recent-data/`:
-                return Promise.resolve({ data: [{ timestamp: new Date(new Date() - 130000).toString() }] })
+                let timestamp = new Date()
+                timestamp = timestamp.setHours(timestamp.getHours() - 7)
+                return Promise.resolve({ data: [{ timestamp: (timestamp - 130000) }] })
             case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ "equipment_id": 10001 }] })
             default:
