@@ -784,32 +784,14 @@ app.get('/api/get-calibration-procedures', (req, res) => {
 });
 
 app.get('/api/lookup-technician', (req, res) => {
-    let technicianQuery = req.query.technician;
-    let first_name;
-    let last_name;
-    if (technicianQuery) {
-        try {
-            technicianName = technicianQuery.toLowerCase().split(' ');
-            first_name = technicianName[0];
-            last_name = technicianName[1];
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    let technician = req.query.technician;
 
-    pool.query('SELECT * FROM api_technician', (err, result) => {
+    pool.query('SELECT * FROM api_technician WHERE user_id = $1', [technician.id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: `Error executing query: ${err}` });
         }
-        const technicians = result.rows;
-        let response = [{ 'technician_id': null }]
-        for (const technician of technicians) {
-            if (technician['first_name'].toLowerCase() === first_name && technician['last_name'].toLowerCase() === last_name) {
-                response = [technician];
-                break;
-            }
-        }
-        res.json(response);
+        const technician = result.rows;
+        res.json(technician);
     })
 });
 

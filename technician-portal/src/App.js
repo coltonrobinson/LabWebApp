@@ -19,7 +19,6 @@ import Receiving from './components/Receiving/Receiving';
 import SalesOrderForm from './components/SalesOrderForm/SalesOrderForm';
 import ShipSensors from './components/ShipSensors/shipSensors';
 import Shipping from './components/Shipping/Shipping';
-import SignInBox from './components/SignInBox/SignInBox';
 import SignInMenu from './components/SignInMenu/SignInMenu';
 
 import styles from './styles/styles.module.css';
@@ -27,6 +26,7 @@ import styles from './styles/styles.module.css';
 function App() {
   const [salesOrder, setSalesOrder] = useState('');
   const [technicianId, setTechnicianId] = useState(0);
+  const [technician, setTechnician] = useState({});
   const [batchNumber, setBatchNumber] = useState('');
   const [sensorList, setSensorList] = useState([]);
   const [procedureId, setProcedureId] = useState(0);
@@ -46,6 +46,7 @@ function App() {
           batchNumber, setBatchNumber,
           salesOrder, setSalesOrder,
           technicianId, setTechnicianId,
+          technician, setTechnician,
           confirmationMessage, setConfirmationMessage,
           popupMessage, setPopupMessage,
           order, setOrder,
@@ -60,7 +61,6 @@ function App() {
           {banner}
 
           <Header title='Technician Portal' />
-          <SignInBox />
           <Navbar />
           <ErrorMessage />
 
