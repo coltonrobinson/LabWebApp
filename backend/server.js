@@ -1235,7 +1235,7 @@ app.get('/api/print-certificate-labels', async (req, res) => {
         res.json({ 'Result': `Failed: print disabled in test environment` });
         return;
     }
-    let url = `http://192.168.1.79:8000/print-label/`;
+    let url = `http://localhost:4000/print-label/`;
 
     fetch(`${url}?calibration_date=${calibrationDate}&due_date=${dueDate}&certificate_number=${certificateNumber}`)
         .then(response => {
@@ -1363,7 +1363,7 @@ app.get('/api/update-certificate-json', (req, res) => {
 app.get('/api/print-pdf', (req, res) => {
     const bytes = req.query.bytes;
 
-    request.post('http://192.168.1.79:8000/print-pdf/', {
+    request.post('http://localhost:4000/print-pdf/', {
         json: {
             pdfBytes: bytes
         }
@@ -1678,7 +1678,7 @@ async function uploadPdfToAzure(pdfBytes, fileName) {
 }
 
 async function printPdf(pdfBytes) {
-    request.post('http://192.168.1.79:8000/print-pdf/', {
+    request.post('http://localhost:4000/print-pdf/', {
         body: pdfBytes,
     })
 }
