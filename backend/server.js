@@ -53,7 +53,7 @@ pool.connect((err, client, release) => {
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
-const port = 8000;
+const port = 443;
 app.locals.pool = pool;
 app.use(cors({
     origin: '*',
