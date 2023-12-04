@@ -385,6 +385,7 @@ app.get('/api/get-recent-data', (req, res) => {
 
 app.get('/api/get-calibrations-by-month', (req, res) => {
     const startDate = new Date(req.query.start_date);
+
     let endDate = new Date(startDate.getTime());
     endDate = new Date(endDate.setMonth(endDate.getMonth() + 1));
 
