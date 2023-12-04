@@ -164,7 +164,7 @@ test('status_dot with 60 second timestamp should be yellow', async () => {
         switch (url) {
             case `http://${ip}/api/get-recent-data/`:
                 let timestamp = new Date()
-                timestamp = timestamp.setHours(timestamp.getHours() - 7)
+                timestamp = timestamp.setHours(timestamp.getHours())
                 return Promise.resolve({ data: [{ timestamp: (timestamp - 60000) }] })
             case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ "equipment_id": 10001 }] })
@@ -189,7 +189,7 @@ test('status_dot with 130 second timestamp should be red', async () => {
         switch (url) {
             case `http://${ip}/api/get-recent-data/`:
                 let timestamp = new Date()
-                timestamp = timestamp.setHours(timestamp.getHours() - 7)
+                timestamp = timestamp.setHours(timestamp.getHours())
                 return Promise.resolve({ data: [{ timestamp: (timestamp - 130000) }] })
             case `http://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ "equipment_id": 10001 }] })

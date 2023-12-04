@@ -31,12 +31,15 @@ const headers = {
 
 let ip;
 let databaseConnection;
+let port;
 if (process.env.STATUS === 'production') {
     ip = process.env.PROD_IP;
     databaseConnection = process.env.PROD_DB_CONNECTION;
+    port = process.env.PROD_PORT;
 } else {
     ip = process.env.DEV_IP;
     databaseConnection = process.env.DEV_DB_CONNECTION;
+    port = process.env.DEV_PORT;
 };
 
 const pool = new Pool(JSON.parse(databaseConnection))
@@ -53,7 +56,10 @@ pool.connect((err, client, release) => {
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
+<<<<<<< HEAD
 const port = 443;
+=======
+>>>>>>> 36ced255bc5e625c6423206813d0fbc929dd868d
 app.locals.pool = pool;
 app.use(cors({
     origin: '*',
@@ -68,7 +74,7 @@ app.listen(port, ip, () => {
     console.log(`Server running at http://${ip}:${port}/`);
 });
 
-app.use((req, res, next) => {
+app.use('*', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', true);
   res.header('Access-Control-Allow-Credentials', true);
@@ -383,6 +389,7 @@ app.get('/api/get-recent-data', (req, res) => {
 
 app.get('/api/get-calibrations-by-month', (req, res) => {
     const startDate = new Date(req.query.start_date);
+
     let endDate = new Date(startDate.getTime());
     endDate = new Date(endDate.setMonth(endDate.getMonth() + 1));
 
@@ -391,8 +398,8 @@ app.get('/api/get-calibrations-by-month', (req, res) => {
                 ON api_order.order_id = api_batch.order_id
                 INNER JOIN api_sensor
                 ON api_batch.batch_id = api_sensor.batch_id
-                WHERE received_timestamp > $1
-                AND received_timestamp < $2
+                WHERE shipped_timestamp > $1
+                AND shipped_timestamp < $2
                 AND api_sensor.certificate_id IS NOT NULL`, [startDate, endDate], (err, result) => {
         if (err) {
             return res.status(500).json({ error: `Error executing query: ${err}` });

@@ -52,7 +52,6 @@ function SignInMenu() {
           });
     
           localStorage.setItem('token', response?.headers['access-token'])
-          console.log(response)
           callApi('lookup-technician', {technician: response.data})
           .then(technician => {
             technician = technician[0]
