@@ -132,7 +132,7 @@ function ManageBatch() {
     })
 
     const downloadWorkOrder = () => {
-        axios.get(`http://${ip}/api/generate-work-order?batch_id=${batchNumber}`, { responseType: 'blob' })
+        axios.get(`https://${ip}/api/generate-work-order?batch_id=${batchNumber}`, { responseType: 'blob' })
             .then(response => {
                 if (response.status === 200) {
                     const contentType = response.headers['content-type']

@@ -19,9 +19,9 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}/api/get-orders-boxed/`:
+            case `https://${ip}/api/get-orders-boxed/`:
                 return Promise.resolve({ data: [{ order_id: 1, customer_order_number: 'test' }] })
-            case `http://${ip}/api/set-order-shipped/`:
+            case `https://${ip}/api/set-order-shipped/`:
                 return Promise.resolve({ data: { Result: 'Success' } })
             default:
                 return Promise.reject();
@@ -57,7 +57,7 @@ test('submit navigates and sets shipped', async () => {
     })
     fireEvent.click(selectAll)
     fireEvent.click(submitButton)
-    expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/set-order-shipped/', {"params": {"name": "test name", "order_id": 1}})
+    expect(mockAxios.get).toBeCalledWith('https://127.0.0.1:8000/api/set-order-shipped/', {"params": {"name": "test name", "order_id": 1}})
     expect(mockedUseNavigate).toBeCalledWith('/')
 })
 

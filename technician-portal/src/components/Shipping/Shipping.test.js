@@ -18,19 +18,19 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}/api/get-certificates-by-order-id/`:
+            case `https://${ip}/api/get-certificates-by-order-id/`:
                 return Promise.resolve({ data: [{ certificate_id: 1, generate_certificate_json: { CS1: '1/1/1970', CS2: '1/1/1970' } }] })
-            case `http://${ip}/api/get-order-by-id/`:
+            case `https://${ip}/api/get-order-by-id/`:
                 return Promise.resolve({ data: { order_id: 1, customer_id: 1 } })
-            case `http://${ip}/api/get-sensors-by-order-id/`:
+            case `https://${ip}/api/get-sensors-by-order-id/`:
                 return Promise.resolve({ data: [{ sensor_id: 1 }] })
-            case `http://${ip}/api/get-equipment/`:
+            case `https://${ip}/api/get-equipment/`:
                 return Promise.resolve({ data: [{ equipment_id: 1 }] })
-            case `http://${ip}/api/get-customer-by-id/`:
+            case `https://${ip}/api/get-customer-by-id/`:
                 return Promise.resolve({ data: { customer_id: 1 } })
-            case `http://${ip}/api/get-batch-by-id/`:
+            case `https://${ip}/api/get-batch-by-id/`:
                 return Promise.resolve({ data: { batch_id: 1 } })
-            case `http://${ip}/api/get-readings-by-sensor-id/`:
+            case `https://${ip}/api/get-readings-by-sensor-id/`:
                 return Promise.resolve({ data: [{ reading_id: 1, timestamp: "2023-05-31T06:00:00.000Z" }] })
             default:
                 return Promise.reject();
@@ -68,8 +68,8 @@ test('generating certificates doesn\'t generate errors', async () => {
     await act(async () => {
         fireEvent.click(generateCertificatesButton)
     })
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/update-batch-technician/`, { "params": { "batch_id": 1, "department": "shipping", "technician_id": 1 } })
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/set-batch-active-state/`, { "params": { "batch_id": 1, "active_state": false } })
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/update-batch-technician/`, { "params": { "batch_id": 1, "department": "shipping", "technician_id": 1 } })
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/set-batch-active-state/`, { "params": { "batch_id": 1, "active_state": false } })
 })
 
 for (let i = 1; i <= 5; i++) {
@@ -78,13 +78,13 @@ for (let i = 1; i <= 5; i++) {
 
             mockAxios.get.mockImplementation(url => {
                 switch (url) {
-                    case `http://${ip}/api/get-certificates-by-order-id/`:
+                    case `https://${ip}/api/get-certificates-by-order-id/`:
                         return Promise.resolve({ data: [{ certificate_id: 1 }] })
-                    case `http://${ip}/api/get-order-by-id/`:
+                    case `https://${ip}/api/get-order-by-id/`:
                         return Promise.resolve({ data: { order_id: 1, customer_id: 1 } })
-                    case `http://${ip}/api/get-sensors-by-order-id/`:
+                    case `https://${ip}/api/get-sensors-by-order-id/`:
                         return Promise.resolve({ data: [{ sensor_id: 1 }] })
-                    case `http://${ip}/api/get-equipment/`:
+                    case `https://${ip}/api/get-equipment/`:
                         return Promise.resolve({
                             data: [
                                 {
@@ -149,11 +149,11 @@ for (let i = 1; i <= 5; i++) {
                                 },
                             ]
                         })
-                    case `http://${ip}/api/get-customer-by-id/`:
+                    case `https://${ip}/api/get-customer-by-id/`:
                         return Promise.resolve({ data: { customer_id: 1 } })
-                    case `http://${ip}/api/get-batch-by-id/`:
+                    case `https://${ip}/api/get-batch-by-id/`:
                         return Promise.resolve({ data: { batch_id: 1, calibration_procedure_id: i } })
-                    case `http://${ip}/api/get-readings-by-sensor-id/`:
+                    case `https://${ip}/api/get-readings-by-sensor-id/`:
                         return Promise.resolve({
                             data: [
                                 {
@@ -281,7 +281,7 @@ for (let i = 1; i <= 5; i++) {
         await act(async () => {
             fireEvent.click(generateCertificatesButton)
         })
-        expect(mockAxios.get).toBeCalledWith('http://127.0.0.1:8000/api/create-certificate/', expect.anything())
+        expect(mockAxios.get).toBeCalledWith('https://127.0.0.1:8000/api/create-certificate/', expect.anything())
         expect(orderLabel).toBeInTheDocument()
     })
 }
@@ -301,7 +301,7 @@ test('printing certificates doesn\'t generate errors', async () => {
     await act(async () => {
         fireEvent.click(generateCertificatesButton)
     })
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/generate-order-certificates/`, { "params": { "order_id": 1, "print": true } })
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/generate-order-certificates/`, { "params": { "order_id": 1, "print": true } })
 })
 
 test('printing labels doesn\'t generate errors', async () => {
@@ -319,13 +319,13 @@ test('printing labels doesn\'t generate errors', async () => {
     await act(async () => {
         fireEvent.click(generateCertificatesButton)
     })
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/print-certificate-labels/`, { "params": { "calibration_date": '1/1/1970', "certificate_number": 'MNT-1', 'due_date': '1/1/1970' } })
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/print-certificate-labels/`, { "params": { "calibration_date": '1/1/1970', "certificate_number": 'MNT-1', 'due_date': '1/1/1970' } })
 })
 
 test('printing labels with no certificates throws error', async () => {
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}/api/get-certificates-by-order-id/`:
+            case `https://${ip}/api/get-certificates-by-order-id/`:
                 return Promise.resolve({ data: [] })
             default:
                 return Promise.reject();
@@ -345,5 +345,5 @@ test('printing labels with no certificates throws error', async () => {
     await act(async () => {
         fireEvent.click(generateCertificatesButton)
     })
-    expect(mockAxios.get).not.toBeCalledWith(`http://${ip}/api/print-certificate-labels/`, expect.anything())
+    expect(mockAxios.get).not.toBeCalledWith(`https://${ip}/api/print-certificate-labels/`, expect.anything())
 })

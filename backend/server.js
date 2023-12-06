@@ -67,7 +67,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.listen(port, ip, () => {
-    console.log(`Server running at http://${ip}:${port}/`);
+    console.log(`Server running at https://${ip}:${port}/`);
 });
 
 app.use('*', (req, res, next) => {

@@ -564,7 +564,7 @@ function Shipping() {
   }
 
   const createReturnRecord = () => {
-    fetch(`http://${ip}/api/generate-return-record/?order_id=${orderNumber}`)
+    fetch(`https://${ip}/api/generate-return-record/?order_id=${orderNumber}`)
       .then(response => {
         if (response.ok) {
           if (response.headers.get('content-type') === 'application/json; charset=utf-8') {
@@ -595,7 +595,7 @@ function Shipping() {
 
   const downloadCertificates = async () => {
     const order = await callApi('get-order-by-id', { 'order_id': orderNumber });
-    fetch(`http://${ip}/api/generate-order-certificates?order_id=${orderNumber}`)
+    fetch(`https://${ip}/api/generate-order-certificates?order_id=${orderNumber}`)
       .then(response => {
         if (response.ok && response.headers.get('content-type') === 'application/json; charset=utf-8') {
           return response.blob();

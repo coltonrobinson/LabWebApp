@@ -12,9 +12,9 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}/api/create-batch/`:
+            case `https://${ip}/api/create-batch/`:
                 return Promise.resolve({ data: [{ batch_id: 1 }] })
-            case `http://${ip}/api/log-batch-interaction/`:
+            case `https://${ip}/api/log-batch-interaction/`:
                 return Promise.resolve()
             default:
                 return Promise.reject()

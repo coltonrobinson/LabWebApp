@@ -29,28 +29,28 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}/api/get-batch-by-id/`:
+            case `https://${ip}/api/get-batch-by-id/`:
                 return Promise.resolve({ data: { current_location: 'testLocation' } });
-            case `http://${ip}/api/generate-work-order?batch_id=1`:
+            case `https://${ip}/api/generate-work-order?batch_id=1`:
                 return Promise.resolve({
                     data: new Blob(['mock file content', 'testing'], { type: 'application/json; charset=utf-8' }),
                     status: 200,
                     statusText: 'OK',
                     headers: { 'content-type': 'application/json; charset=utf-8' },
                 });
-            case `http://${ip}/api/generate-work-order?batch_id=2`:
+            case `https://${ip}/api/generate-work-order?batch_id=2`:
                 return Promise.resolve({
                     status: 400,
                     headers: { 'content-type': 'application/json; charset=utf-8' },
                 });
-            case `http://${ip}/api/generate-work-order?batch_id=3`:
+            case `https://${ip}/api/generate-work-order?batch_id=3`:
                 return Promise.resolve({
                     status: 200,
                     headers: { 'content-type': 'wrong content type' },
                 });
-            case `http://${ip}/api/change-sensor-heartbeat/`:
+            case `https://${ip}/api/change-sensor-heartbeat/`:
                 return Promise.resolve({ data: { Result: 'Success' } });
-            case `http://${ip}/api/create-location-log/`:
+            case `https://${ip}/api/create-location-log/`:
                 return Promise.resolve({ data: { Result: 'Success' } });
             default:
                 return Promise.reject();
@@ -112,7 +112,7 @@ const testGenerateWorkOrder = async (batchNumber, statusCode, expectedMessage) =
     const downloadWorkOrderButton = screen.getByText(/download work order/i);
     fireEvent.click(downloadWorkOrderButton);
 
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/generate-work-order?batch_id=${batchNumber}`, { "responseType": "blob" });
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/generate-work-order?batch_id=${batchNumber}`, { "responseType": "blob" });
 
     await waitFor(() => {
         expect(mockSetPopupMessage).toHaveBeenCalledWith(expectedMessage);
@@ -141,7 +141,7 @@ test('generating work order with success returns blob', async () => {
 
     const downloadWorkOrderButton = screen.getByText(/download work order/i);
     fireEvent.click(downloadWorkOrderButton);
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/generate-work-order?batch_id=1`, { "responseType": "blob" });
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/generate-work-order?batch_id=1`, { "responseType": "blob" });
 });
 
 const testChangeSensorHeartbeat = async (sensorId, heartbeatValue) => {
@@ -170,7 +170,7 @@ const testChangeSensorHeartbeat = async (sensorId, heartbeatValue) => {
     });
 
     expect(heartbeatBox).toHaveValue('');
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/change-sensor-heartbeat/`, {
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/change-sensor-heartbeat/`, {
         'params': { 'sensor_id': sensorId, 'heartbeat': heartbeatValue }
     });
 };
@@ -205,7 +205,7 @@ const testChangeLocation = async (sensorId, locationValue, batchId) => {
     });
 
     expect(locationBox).toHaveValue('');
-    expect(mockAxios.get).toBeCalledWith(`http://${ip}/api/create-location-log/`, {
+    expect(mockAxios.get).toBeCalledWith(`https://${ip}/api/create-location-log/`, {
         'params': { 'location': locationValue, 'batch_id': batchId }
     });
 };

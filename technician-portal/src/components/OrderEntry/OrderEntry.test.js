@@ -20,11 +20,11 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}/api/get-orders-to-ship/`:
+            case `https://${ip}/api/get-orders-to-ship/`:
                 return Promise.resolve({ data: [{ order_id: 1, customer_order_number: 'test' }, { order_id: 2, customer_order_number: 'test' }] })
-            case `http://${ip}/api/get-batches-by-order-id/`:
+            case `https://${ip}/api/get-batches-by-order-id/`:
                 return Promise.resolve({ data: ['test', 'test'] })
-            case `http://${ip}/api/get-order-by-id/`:
+            case `https://${ip}/api/get-order-by-id/`:
                 return Promise.resolve({ data: { order_id: 1 } })
             default:
                 return Promise.reject();
@@ -134,9 +134,9 @@ test('entering order in box without technician id stops', async () => {
 test('response without order_id gets detected', async () => {
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `http://${ip}/api/get-orders-to-ship/`:
+            case `https://${ip}/api/get-orders-to-ship/`:
                 return Promise.resolve({ data: [{ order_id: 1, customer_order_number: 'test' }, { order_id: 2, customer_order_number: 'test' }] })
-            case `http://${ip}/api/get-order-by-id/`:
+            case `https://${ip}/api/get-order-by-id/`:
                 return Promise.resolve({ data: { Result: 'Error' } })
             default:
                 return Promise.reject();
