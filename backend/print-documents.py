@@ -12,6 +12,10 @@ app = Flask(__name__)
 CORS(app)
 z = Zebra()
 z.setqueue('ZTC-ZT230-200dpi-ZPL')
+print('Starting ssh')
+command_string = 'autossh -M 20000 -R 4000:localhost:8000 -i "brandtw_monnit_prod.pem" ubuntu@ec2-3-134-9-110.us-east-2.compute.amazonaws.com'
+os.system(f"gnome-terminal -e '{command_string}'")
+print('ssh successful')
 
 @app.route('/print-label/', methods=['GET', 'POST'])
 def print_labels():
@@ -37,4 +41,4 @@ def test():
     return 'Printed PDF successfully'
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.79', port=8000)
+    app.run(host='localhost', port=8000)

@@ -1368,6 +1368,9 @@ app.get('/api/print-pdf', (req, res) => {
             pdfBytes: bytes
         }
     })
+    .then(result => {
+        console.log(result)
+    })
 })
 
 app.get('/api/generate-certificate', async (req, res) => {
@@ -1680,6 +1683,9 @@ async function uploadPdfToAzure(pdfBytes, fileName) {
 async function printPdf(pdfBytes) {
     request.post('http://localhost:4000/print-pdf/', {
         body: pdfBytes,
+    })
+    .then(result => {
+        console.log(result)
     })
 }
 
