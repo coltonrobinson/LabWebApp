@@ -1672,7 +1672,9 @@ async function printPdf(pdfBytes) {
         body: pdfBytes,
     },
         function (error, response, body) {
-            console.log(response.body)
+            if (response.body !== 'Printed PDF successfully' || error) {
+                console.log('Error printing pdf: ', error ? error : 'No error code')
+            }
         }
     )
 }
