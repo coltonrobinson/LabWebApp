@@ -1672,7 +1672,7 @@ async function printPdf(pdfBytes) {
         body: pdfBytes,
     },
         function (error, response, body) {
-            console.log(response)
+            console.log(response.body)
         }
     )
 }
