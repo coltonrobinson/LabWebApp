@@ -71,12 +71,12 @@ app.listen(port, ip, () => {
 });
 
 app.use('*', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', true);
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.header('Access-Control-Expose-Headers', 'Access-Token');
-  next();
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', true);
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.header('Access-Control-Expose-Headers', 'Access-Token');
+    next();
 });
 
 app.post("/api/auth/sign-in", async (req, res) => {
@@ -151,7 +151,7 @@ app.post("/api/auth/sign-up", async (req, res) => {
         }
 
         delete user.password;
-       return res.status(201).json(user);
+        return res.status(201).json(user);
     } catch (error) {
         return res.status(500).json(error);
     }
@@ -193,7 +193,7 @@ app.post("/api/auth/resend-verify-email", async (req, res) => {
             token,
         });
     } catch (error) {
-       return res.status(500).json(error);
+        return res.status(500).json(error);
     }
     return res.status(200).json({
         message:
@@ -308,7 +308,7 @@ app.get("/api/users/me", auth, async (req, res) => {
         [user.id]
     );
     if (result.rows.length === 0) {
-        return res.status(404).json({ error : 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
     }
 
     return res.status(200).json(result.rows[0]);
@@ -949,7 +949,7 @@ app.get('/api/calibrate-sensor', (req, res) => {
         .then(result => {
             url = `https://www.imonnit.com/json/SensorSetCalibration/`;
             parameters = result.Result;
-            parameters.Calibration1 = parseInt(targetReading*10);
+            parameters.Calibration1 = parseInt(targetReading * 10);
             parameters.PushAutoCalibrateCommand = true;
             parameters.PushProfileConfig1 = false;
             parameters.PushProfileConfig2 = false;
@@ -1360,19 +1360,6 @@ app.get('/api/update-certificate-json', (req, res) => {
     })
 });
 
-app.get('/api/print-pdf', (req, res) => {
-    const bytes = req.query.bytes;
-
-    request.post('http://localhost:4000/print-pdf/', {
-        json: {
-            pdfBytes: bytes
-        }
-    })
-    .then(result => {
-        console.log(result)
-    })
-})
-
 app.get('/api/generate-certificate', async (req, res) => {
     const certificateId = req.query.certificate_id;
     const upload = req.query.upload;
@@ -1683,10 +1670,11 @@ async function uploadPdfToAzure(pdfBytes, fileName) {
 async function printPdf(pdfBytes) {
     request.post('http://localhost:4000/print-pdf/', {
         body: pdfBytes,
-    })
-    .then(result => {
-        console.log(result)
-    })
+    },
+        function (error, response, body) {
+            console.log(response)
+        }
+    )
 }
 
 async function addSensorsToReturnRecord(bytes, sensorList) {
