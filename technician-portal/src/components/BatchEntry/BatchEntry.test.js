@@ -20,11 +20,11 @@ beforeEach(() => {
 
     mockAxios.get.mockImplementation(url => {
         switch (url) {
-            case `https://${ip}/api/get-batches-by-active-state/`:
+            case `http://${ip}/api/get-batches-by-active-state/`:
                 return Promise.resolve({ data: [{ batch_id: 123 }] })
-            case `https://${ip}/api/log-batch-interaction/`:
+            case `http://${ip}/api/log-batch-interaction/`:
                 return Promise.resolve()
-            case `https://${ip}/api/get-batch-by-id/`:
+            case `http://${ip}/api/get-batch-by-id/`:
                 return Promise.resolve({ data: { batch_id: 123 } })
             default:
                 return Promise.reject()
@@ -92,11 +92,11 @@ test('clicking button navigates to ManageBatch screen', async () => {
         )
     })
     const batchButton = screen.getByText(/batch: 123/i)
-    expect(mockAxios.get).not.toBeCalledWith("https://127.0.0.1:8000/api/update-batch-technician/", { "params": { "batch_id": 123, "department": "testing", "technician_id": 1 } })
+    expect(mockAxios.get).not.toBeCalledWith("http://127.0.0.1:8000/api/update-batch-technician/", { "params": { "batch_id": 123, "department": "testing", "technician_id": 1 } })
     await act(async () => {
         fireEvent.click(batchButton)
     })
-    expect(mockAxios.get).toBeCalledWith("https://127.0.0.1:8000/api/update-batch-technician/", { "params": { "batch_id": 123, "department": "testing", "technician_id": 1 } })
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/update-batch-technician/", { "params": { "batch_id": 123, "department": "testing", "technician_id": 1 } })
     expect(mockedUseNavigate).toBeCalledWith('/manageBatch')
 })
 
@@ -133,8 +133,8 @@ test('submit batch number with valid number navigates', async () => {
     await act(async() => {
         fireEvent.submit(form)
     })
-    expect(mockAxios.get).toBeCalledWith("https://127.0.0.1:8000/api/get-batches-by-active-state/", {"params": {"active": true}})
-    expect(mockAxios.get).toBeCalledWith("https://127.0.0.1:8000/api/get-batch-by-id/", {"params": {"batch_id": 123}})
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/get-batches-by-active-state/", {"params": {"active": true}})
+    expect(mockAxios.get).toBeCalledWith("http://127.0.0.1:8000/api/get-batch-by-id/", {"params": {"batch_id": 123}})
     expect(mockedUseNavigate).toBeCalledWith('/manageBatch')
 })
 
@@ -155,7 +155,7 @@ test('submit batch number without technicianId doesn\'t continue', async () => {
     await act(async() => {
         fireEvent.submit(form)
     })
-    expect(mockAxios.get).not.toBeCalledWith("https://127.0.0.1:8000/api/get-batch-by-id/", {"params": {"batch_id": 123}})
+    expect(mockAxios.get).not.toBeCalledWith("http://127.0.0.1:8000/api/get-batch-by-id/", {"params": {"batch_id": 123}})
     expect(mockedUseNavigate).not.toBeCalledWith('/manageBatch')
 })
 
@@ -176,6 +176,6 @@ test('submit batch number without proper batch number doesn\'t continue', async 
     await act(async() => {
         fireEvent.submit(form)
     })
-    expect(mockAxios.get).not.toBeCalledWith("https://127.0.0.1:8000/api/get-batch-by-id/", expect.anything())
+    expect(mockAxios.get).not.toBeCalledWith("http://127.0.0.1:8000/api/get-batch-by-id/", expect.anything())
     expect(mockedUseNavigate).not.toBeCalledWith('/manageBatch')
 })
