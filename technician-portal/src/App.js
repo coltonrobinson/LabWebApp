@@ -13,6 +13,7 @@ import MainMenu from './components/MainMenu/MainMenu';
 import ManageBatch from './components/ManageBatch/ManageBatch';
 import Metrics from './components/Metrics/Metrics';
 import Navbar from './components/Navbar/Navbar.js';
+import NavigationMenu from './components/NavigationMenu.js/NavigationMenu.js';
 import OrderEntry from './components/OrderEntry/OrderEntry';
 import PageNotFound from './components/PageNotFound/PageNotFound';
 import Receiving from './components/Receiving/Receiving';
@@ -61,27 +62,31 @@ function App() {
           {banner}
 
           <Header title='Technician Portal' />
-          <Navbar />
-          <ErrorMessage />
+          <div className={styles.main_body}>
+            <NavigationMenu />
+            <div className={styles.display_area}>
+              <Navbar />
+              <ErrorMessage />
+              <Routes>
+                <Route path='/' element={<MainMenu />} />
+                <Route path='/batchEntry' element={<BatchEntry />} />
+                <Route path='/confirmation' element={<ConfirmationScreen />} />
+                <Route path='/createSalesOrder' element={<SalesOrderForm />} />
+                
+                <Route path='/locationEntry' element={<LocationEntry />} />
+                <Route path='/manageBatch' element={<ManageBatch />} />
+                <Route path='/metrics' element={<Metrics />} />
+                <Route path='/orderEntry' element={<OrderEntry />} />
 
-          <Routes>
-            <Route path='/' element={<MainMenu />} />
-            <Route path='/batchEntry' element={<BatchEntry />} />
-            <Route path='/confirmation' element={<ConfirmationScreen />} />
-            <Route path='/createSalesOrder' element={<SalesOrderForm />} />
-
-            <Route path='/labView' element={<LabView />} />
-            <Route path='/locationEntry' element={<LocationEntry />} />
-            <Route path='/manageBatch' element={<ManageBatch />} />
-            <Route path='/metrics' element={<Metrics />} />
-            <Route path='/orderEntry' element={<OrderEntry />} />
-
-            <Route path='/receiving' element={<Receiving />} />
-            <Route path='/shipping' element={<Shipping />} />
-            <Route path='/shipSensors' element={<ShipSensors />} />
-            <Route path='/signIn' element={<SignInMenu />} />
-            <Route path='*' element={<PageNotFound />} />
-          </Routes>
+                <Route path='/receiving' element={<Receiving />} />
+                <Route path='/shipping' element={<Shipping />} />
+                <Route path='/shipSensors' element={<ShipSensors />} />
+                <Route path='/signIn' element={<SignInMenu />} />
+                <Route path='*' element={<PageNotFound />} />
+              </Routes>
+            </div>
+            <LabView />
+          </div>
         </Router>
       </AppWrapper>
     </div >

@@ -23,7 +23,7 @@ const DropDown = ({ options, selectedOption, setSelectedOption, batches, setBatc
     };
 
     return (
-        <div>
+        <div className={styles.double_span}>
             <select className={styles.dropdown} value={selectedOption} onChange={handleOptionChange}>
                 <option value="">Add Calibration Procedure</option>
                 {options.map((option, index) => (

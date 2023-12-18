@@ -54,11 +54,11 @@ function BatchEntry() {
                         const batches = [...new Set(response.filter(batch => batch.order_id === order))].sort((a, b) => b - a);
                         batchList.push(
                             <div key={orders.indexOf(order)}>
+                                <hr />
                                 <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
                                 {batches.map((batch, index) => {
                                     return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} key={index} />
                                 })}
-                                <hr />
                             </div>
                         )
                     }
@@ -106,9 +106,6 @@ function BatchEntry() {
                 <input type='text' value={batchNumber} onChange={handleChange} className={styles.default_text_box} placeholder={'Batch Number'} />
                 <button type='submit' className={styles.default_button}>Submit</button>
             </form>
-            <br />
-            <hr />
-            <br />
             {batches}
         </div>
     );

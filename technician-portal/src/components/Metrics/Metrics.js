@@ -59,7 +59,7 @@ function Metrics() {
             borderColor: '#333',
             borderWidth: 1,
             hoverBorderWidth: 2,
-            borderRadius: 5,
+            borderRadius: 2,
           }])
         } else {
           newDatasets.push(
@@ -70,7 +70,7 @@ function Metrics() {
               borderColor: '#333',
               borderWidth: 1,
               hoverBorderWidth: 2,
-              borderRadius: 5,
+              borderRadius: 2,
             }
           )
         }

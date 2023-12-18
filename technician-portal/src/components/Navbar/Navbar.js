@@ -1,11 +1,17 @@
 import styles from "../../styles/styles.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAppContext } from "../../contexts/app";
 
 function Navbar() {
     const [navbar, setNavbar] = useState([])
     const location = useLocation();
     const navigate = useNavigate();
+    const {technicianId} = useAppContext();
+
+    if (!technicianId) {
+        return <></>
+    }
 
     const capitalize = (string) => {
         return string[0].toUpperCase() + string.slice(1);

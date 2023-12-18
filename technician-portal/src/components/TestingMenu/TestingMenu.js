@@ -58,7 +58,7 @@ function TestingMenu({ setPoints }) {
                                 if (recentReadings[0].devices_under_test[`${sensor.sensor_id}temp`] !== undefined) {
                                     currentReadingCell = <div className={styles.grid_entry_green}>{`${recentReadings[0].devices_under_test[`${sensor.sensor_id}temp`].toFixed(2)}°C`}</div>
                                 } else {
-                                    currentReadingCell = <div className={styles.grid_entry}>No data found</div>
+                                    currentReadingCell = <div className={styles.grid_entry}>No data</div>
                                 }
                                 firstCell = (<div className={styles.grid_entry}>{tempReferenceReadings.setPoint0}</div>);
                                 referenceCell = (<div className={sensorReadings.set_point_0_style}>{sensorReadings.set_point_0}</div>);
@@ -95,7 +95,7 @@ function TestingMenu({ setPoints }) {
                                     ${recentReadings[0].devices_under_test[`${sensor.sensor_id}temp`].toFixed(2)}°C`}
                                     </div>
                                 } else {
-                                    currentReadingCell = <div className={styles.grid_entry}>No data found</div>
+                                    currentReadingCell = <div className={styles.grid_entry}>No data</div>
                                 }
 
                                 for (const type of ['humidity', 'temperature']) {
@@ -171,7 +171,7 @@ function TestingMenu({ setPoints }) {
             const totalSeconds = parseInt((now.getTime() - new Date(stableTime[1]).getTime()) / 1000);
             const minutesAgo = parseInt(totalSeconds / 60);
             if (isNaN(minutesAgo)) {
-                setters[i](`No stable times found`);
+                setters[i](`None found`);
             } else if (minutesAgo > 0) {
                 setters[i](`Stable ${minutesAgo} minutes ago`);
             } else {

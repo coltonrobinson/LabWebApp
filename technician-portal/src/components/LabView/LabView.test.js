@@ -3,6 +3,7 @@ import LabView from './LabView';
 import mockAxios from 'axios';
 import callApi from '../../utils/api/callApi';
 import ip from '../../utils/ip/ip';
+import { AppWrapper } from '../../contexts/app';
 
 jest.mock('axios');
 jest.spyOn(global, 'setTimeout');
@@ -23,7 +24,11 @@ beforeEach(() => {
 })
 
 async function renderScreen() {
-    render(<LabView />);
+    render(
+        <AppWrapper sharedState={{ technicianId: 1 }}>
+            <LabView />
+        </AppWrapper>
+    );
     await act(async () => {
         await callApi('get-recent-data');
     });
@@ -65,7 +70,7 @@ it('renders equipment box for each reference', async () => {
                                     }
                                 }
                             },
-                            S000103:  {
+                            S000103: {
                                 "Humidity": 91.29,
                                 "Temperature": 26.32,
                                 "stability_data": {
@@ -87,7 +92,7 @@ it('renders equipment box for each reference', async () => {
                             },
                         },
                         super_daq_data: {
-                            S000105:  {
+                            S000105: {
                                 "Humidity": 91.29,
                                 "Temperature": 26.32,
                                 "stability_data": {
@@ -136,7 +141,7 @@ it('renders equipment box for each reference', async () => {
     await act(async () => {
         jest.advanceTimersByTime(3000);
     })
-    
+
 })
 
 test('status_dot on render has status_dot_red class', async () => {

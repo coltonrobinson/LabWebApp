@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import callApi from "../../utils/api/callApi";
 import styles from "../../styles/styles.module.css";
 import Equipment from "../Equipment/Equipment";
+import { useAppContext } from "../../contexts/app";
 
 function LabView() {
     const [aggregatorStatusDotStyle, setAggregatorStatusDotStyle] = useState(styles.status_dot_red);
     const [referenceList, setReferenceList] = useState([]);
     const [labReadings, setLabReadings] = useState(null);
-    const [equipmentList, setEquipmentList] = useState([])
+    const [equipmentList, setEquipmentList] = useState([]);
+    const openedEquipment = useRef('');
+    const { technicianId } = useAppContext();
+
 
     const setAggregatorStyle = (data) => {
         let now = new Date()
@@ -33,35 +37,35 @@ function LabView() {
                 let description;
                 for (const reference in references) {
                     description = equipmentList.filter(equipment => equipment.asset_tag === reference)[0].description
-                    referenceArray.push(<Equipment key={reference} assetId={reference} readings={references[reference]} description={description} />)
+                    referenceArray.push(<Equipment key={reference} assetId={reference} readings={references[reference]} description={description} openedEquipment={openedEquipment} updateData={updateData} />)
                 }
-                setLabReadings(<span className={styles.lab_readings}>Lab Readings: {data.lab_humidity}%RH @ {data.lab_temperature}°C</span>)
+                setLabReadings(`${data.lab_humidity}%RH @ ${data.lab_temperature}°C`)
                 setReferenceList(referenceArray)
             })
     }
     useEffect(() => {
         if (equipmentList.length === 0) {
             callApi('get-equipment')
-            .then(equipment => {
-                setEquipmentList(equipment);
-            })
+                .then(equipment => {
+                    setEquipmentList(equipment);
+                })
         }
         const interval = setInterval(updateData, 3000);
         return () => clearInterval(interval);
     })
 
+    if (!technicianId) {
+        return <></>;
+    }
     return (
-        <>
-            <h1 className={styles.title}>Lab View
+        <div className={styles.equipment_container}>
+            <h1 className={styles.lab_readings}>
+                Aggregator status: <span className={`${aggregatorStatusDotStyle} ${styles.status_dot}`} data-testid={'statusDot'} ></span>
+                <br />
                 {labReadings}
-                <span className={styles.server_status}>
-                    Aggregator status: <span className={`${aggregatorStatusDotStyle} ${styles.status_dot}`} data-testid={'statusDot'} ></span>
-                </span>
             </h1>
-            <div className={styles.equipment_container}>
-                {(referenceList.length > 0) ? referenceList : <h1 className={styles.title}>Loading...</h1>}
-            </div>
-        </>
+            {(referenceList.length > 0) ? referenceList : <h1 className={styles.title}>Loading...</h1>}
+        </div>
     )
 }
 

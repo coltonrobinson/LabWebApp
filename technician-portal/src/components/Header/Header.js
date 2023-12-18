@@ -25,8 +25,11 @@ function Header({ title }) {
         <button className={styles.home_button} onClick={() => navigate('/')}></button>
 
         <div className={styles.sign_in_container}>
-          <div className={styles.technician_name}>{technician.first_name}</div>
-          {technician.technician_id ? <button className={styles.sign_in_button} onClick={handleSubmit}>Sign Out</button> : <></>}
+          {technician.technician_id ?
+            <>
+              <div className={styles.technician_name}>Hello {technician.first_name}!</div>
+              <button className={styles.sign_in_button} onClick={handleSubmit}>Sign Out</button>
+            </> : <></>}
         </div>
       </header>
     </>

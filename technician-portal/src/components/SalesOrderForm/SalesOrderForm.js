@@ -100,33 +100,29 @@ function SalesOrderForm() {
     }
 
     return (
-        <>
-            <h1 className={styles.title}>{`Sales Order: ${order}`}</h1>
+        <div className={styles.menu}>
             <div className={styles.grid_menu}>
-                <div className={styles.menu_form}>
-                    <div className={styles.grid_entry_container}>
-                        {CUSTOMER_INPUTS.map((inputItem, index) =>
-                            <input
-                                key={index + inputItem.placeholder}
-                                type={inputItem.type}
-                                className={styles.customer_info_text_box}
-                                placeholder={inputItem.placeholder}
-                                defaultValue={inputItem.defaultValue}
-                            />
-                        )}
-                    </div>
-                    <DropDown
-                        options={calibrationProcedures}
-                        selectedOption={selectedOption}
-                        setSelectedOption={setSelectedOption}
-                        batches={batches}
-                        setBatches={setBatches}
-                    />
-                    {batchDisplay}
-                    <button onClick={handleSubmit} className={styles.default_button}>Complete Sales Order</button>
-                </div>
+                <h1 className={styles.title}>{`Sales Order: ${order}`}</h1>
+                    {CUSTOMER_INPUTS.map((inputItem, index) =>
+                        <input
+                            key={index + inputItem.placeholder}
+                            type={inputItem.type}
+                            className={styles.default_text_box}
+                            placeholder={inputItem.placeholder}
+                            defaultValue={inputItem.defaultValue}
+                        />
+                    )}
+                <DropDown
+                    options={calibrationProcedures}
+                    selectedOption={selectedOption}
+                    setSelectedOption={setSelectedOption}
+                    batches={batches}
+                    setBatches={setBatches}
+                />
+                {batchDisplay}
+                <button onClick={handleSubmit} className={`${styles.default_button} ${styles.double_span}`}>Complete Sales Order</button>
             </div>
-        </>
+        </div>
     );
 }
 

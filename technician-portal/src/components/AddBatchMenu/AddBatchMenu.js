@@ -110,16 +110,15 @@ function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches
 
     if (!displayed) {
         return (
-            <button className={styles.default_button} onClick={() => setDisplayed(true)}>{`Expand (Batch: ${batchNumber} | Calibration procedure: ${calibrationProcedureId}) | Total sensors: ${sensors.length}`}</button>
+            <button className={`${styles.default_button} ${styles.double_span}`} onClick={() => setDisplayed(true)}>{`Expand (Batch: ${batchNumber} | Calibration procedure: ${calibrationProcedureId}) | Total sensors: ${sensors.length}`}</button>
         )
     }
 
     return (
         <>
         {confirmationArray.length > 0 ? <ConfirmationPopup confirmationArray={confirmationArray} setConfirmationArray={setConfirmationArray} handleConfirm={removeBatch} /> : <></>}
-            <button className={styles.default_button} onClick={() => setDisplayed(false)}>{`Hide (Batch: ${batchNumber} | Calibration procedure: ${calibrationProcedureId}) | Total sensors: ${sensors.length}`}</button>
+            <button className={`${styles.default_button} ${styles.double_span}`} onClick={() => setDisplayed(false)}>{`Hide (Batch: ${batchNumber} | Calibration procedure: ${calibrationProcedureId}) | Total sensors: ${sensors.length}`}</button>
             <h1 className={styles.title}>{`Current location: ${currentLocation}`}</h1>
-            <div className={styles.sensor_entry_grid_container}>
                 <form onSubmit={handleAddSensor} data-testid={'addSensorForm'}>
                     <input type='text' value={sensor} onChange={event => setSensor(event.target.value)} className={styles.default_text_box} placeholder={'Sensor ID:Check Digit'} />
                 </form>
@@ -128,7 +127,6 @@ function AddBatchMenu({ calibrationProcedureId, batchNumber, batches, setBatches
                 </form>
                 <ScannedSensors sensorList={sensors} />
                 <button type="button" className={`${styles.remove_batch_button} ${styles.red}`} onClick={() => setConfirmationArray([`Are you sure you would like to remove batch ${batchNumber}?`])}>Remove batch</button>
-            </div>
         </>
     )
 }

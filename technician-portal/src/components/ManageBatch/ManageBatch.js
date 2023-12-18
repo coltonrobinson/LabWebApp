@@ -305,9 +305,6 @@ function ManageBatch() {
                         <input type='text' value={sensor} onChange={handleSensorChange} className={styles.default_text_box} placeholder={'Add/remove sensor'} />
                     </form>
                 </div>
-                <br />
-                <hr />
-                <br />
                 <div className={styles.test_menu}>
                     <h1 className={styles.title}>{`Calibration Procedure: ${procedureId}`}</h1>
                     <TestingMenu readings={readings} setPoints={getSetPoints()} />

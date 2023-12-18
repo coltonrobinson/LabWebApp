@@ -1,37 +1,106 @@
 .App {
+    overflow: auto;
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     margin: 0;
-    background: linear-gradient(135deg, #d6d6d6, white);
+    font-weight: 600;
 }
 
 .main_header {
-    font-family: Arial, sans-serif;
-    position: relative;
+    position: fixed;
     width: 100%;
-    background: linear-gradient(45deg, #08afe6, #55d1f0);
+    background-color: #08afe6;
     padding: 20px 0;
     margin: 0;
     color: #fff;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     height: 50px;
+    z-index: 1;
+}
+
+.main_body {
+    margin-top: 90px;
+    display: grid;
+    grid-template-columns: 225px 1fr 225px;
+}
+
+.navigation_menu {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    width: 225px;
+    height: 100%;
+    margin: 0;
+    padding: 10px 0;
+    list-style: none;
+    background-color: #333;
+    transition-duration: .25s;
+}
+
+.navigation_item {
+    display: block;
+    color: #c5c5c5;
+    background-color: #333;
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    transition-duration: .25s;
+    text-align: left;
+    border: none;
+    width: 100%;
+}
+
+.navigation_item:hover {
+    cursor: pointer;
+    color: #333;
+    background-color: #868686;
+}
+
+.navigation_menu_radio {
+    display: none;
+}
+
+.navigation_menu_radio:checked+.navigation_item {
+    color: #333;
+    background-color: #c5c5c5;
+}
+.navigation_menu_radio:checked+.navigation_item .icon_image {
+    filter: invert(0.2);
+}
+
+.navigation_item:hover .icon_image {
+    filter: invert(0.2);
+}
+
+.icon_image {
+    position: relative;
+    filter: invert(0.8);
+    width: 20px;
+}
+
+.sign_in_menu {
+    position: fixed;
+    top: 100px;
+    right: 0;
+    left: 0;
 }
 
 .default_button {
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 5px;
     cursor: pointer;
     font-size: large;
     background-color: #3dc6ea;
     color: #f1f1f1;
-    margin: 5px;
-    width: 95%;
+    width: 100%;
     box-sizing: border-box;
+    transition-duration: 0.25s;
+    border: none;
+    margin: 5px 0;
 }
 
 .default_button:active {
@@ -43,7 +112,7 @@
 }
 
 .default_button_half {
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 5px;
     cursor: pointer;
     font-size: large;
@@ -63,22 +132,23 @@
     box-shadow: 2px 2px 5px #333;
 }
 
-.batch_button:hover {
-    background-color: #c5c5c5;
-}
-
 .batch_button {
-    border: #333 2px solid;
+    border: none;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 5px;
     cursor: pointer;
     font-size: large;
-    background-color: #f1f1f1;
     color: #08afe6;
     margin: 5px;
     width: 32%;
     box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #f3f3f3;
+}
+
+.batch_button:hover {
+    background-color: #dadada;
 }
 
 .batch_button:active {
@@ -87,49 +157,51 @@
 
 .calibration_1 {
     background-color: red;
-    padding: 2px;
+    padding: 2px 6px;
     color: #333;
     border-radius: 4px;
 }
 
 .calibration_2 {
     background-color: blue;
-    padding: 2px;
+    padding: 2px 6px;
     color: #f1f1f1;
     border-radius: 4px;
 }
 
 .calibration_3 {
     background-color: yellow;
-    padding: 2px;
+    padding: 2px 6px;
     color: #333;
     border-radius: 4px;
 }
 
 .calibration_4 {
     background-color: red;
-    padding: 2px;
+    padding: 2px 6px;
     color: #333;
     border-radius: 4px;
 }
 
 .calibration_5 {
     background-color: yellow;
-    padding: 2px;
+    padding: 2px 6px;
     color: #333;
     border-radius: 4px;
 }
 
 .home_button {
-    width: 165px;
-    height: 75px;
+    width: 130px;
+    height: 60px;
     background-image: url(../media/logo.png);
     background-size: 100% 100%;
-    position: absolute;
-    left: 15px;
-    top: 10px;
-    border-radius: 5px;
+    position: fixed;
+    left: 20px;
+    top: 15px;
+    border-radius: 2px;
     cursor: pointer;
+    z-index: 1;
+    border: none;
 }
 
 .home_button:active {
@@ -144,7 +216,7 @@
     padding: none;
     right: 0;
     top: 0;
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
 }
 
@@ -157,8 +229,9 @@
 }
 
 .sign_in_container {
-    position: absolute;
-    min-width: 200px;
+    position: fixed;
+    width: fit-content;
+    padding-right: 100px;
     z-index: 1;
     top: 25px;
     right: 15px;
@@ -166,7 +239,7 @@
 
 .pop_up {
     padding: 10px;
-    position: absolute;
+    position: fixed;
     top: 35px;
     background-color: #f1f1f1;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
@@ -181,41 +254,46 @@
 }
 
 .technician_name {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+    position: relative;
+    right: 20px;
+    width: fit-content;
     font-size: larger;
     margin-top: 10px;
-    text-decoration: underline;
 }
 
 .menu {
-    border: #08afe6 4px solid;
-    border-radius: 5px;
-    background-color: transparent;
-    padding: 10px 5px 10px 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: #f3f3f3;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
     text-align: center;
-    margin: 20px;
     width: 70%;
     box-sizing: border-box;
-    margin-left: 15%;
-    margin-right: 15%;
+    margin: 64px 15% 0 15%;
+    padding: 20px;
 }
 
 .default_text_box {
-    width: 95%;
+    width: 100%;
     box-sizing: border-box;
-    margin: 5px;
-    border-radius: 5px;
+    border-radius: 2px;
     height: 30px;
     font-size: large;
+    font-weight: 600;
     text-align: center;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 5px 0;
+}
+
+.default_text_box:focus {
+    outline: none;
 }
 
 .grid_menu {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
-    margin: 20px;
 }
 
 .menu_form {
@@ -232,9 +310,10 @@
     width: 48%;
     box-sizing: border-box;
     margin: 5px;
-    border-radius: 5px;
+    border-radius: 2px;
     height: 30px;
     font-size: large;
+    font-weight: 600;
     text-align: center;
 }
 
@@ -248,7 +327,7 @@
 }
 
 .title {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: large;
     text-align: center;
     word-wrap: break-word;
@@ -257,7 +336,7 @@
 
 .sensor_grid_box {
     background-color: #333;
-    border-radius: 5px;
+    border-radius: 2px;
     color: #f1f1f1;
     padding: 2px;
     border: 1px solid black;
@@ -272,12 +351,11 @@
 .test_menu {
     position: relative;
     width: 90%;
+    margin-top: 10px;
     margin-left: 4%;
     text-align: center;
     background-color: #f2f2f2;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    border: 2px solid #333;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 5px;
 }
 
@@ -287,18 +365,6 @@
     gap: 10px;
     position: absolute;
     bottom: 0;
-}
-
-.sensor_list {
-    background-color: #333;
-    color: #f1f1f1;
-    border-radius: 5px;
-    border: 2px solid #f2f2f2;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.sensor_list li {
-    list-style-type: none;
 }
 
 .button_container button {
@@ -313,7 +379,14 @@
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
-    padding: 0 10px 0 10px;
+    max-width: 100%;
+    margin-top: 10px;
+    transition-duration: 0.25s;
+}
+
+.grid_row .default_button {
+    margin: 0;
+    width: 100%;
 }
 
 .humidity_grid {
@@ -323,46 +396,44 @@
 }
 
 .grid_entry {
-    width: 85%;
-    border: 2px solid #333;
-    background-color: #333;
-    color: #f1f1f1;
-    border-radius: 5px;
-    margin: 10px;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 2px;
     font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
+    color: #f1f1f1;
+    background-color: #333;
 }
 
 .grid_entry_green {
-    width: 85%;
-    border: 2px solid #333;
-    background-color: #5ff037;
-    border-radius: 5px;
-    margin: 10px;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 2px;
     font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
+    color: black;
+    background-color: #5ff037;
 }
 
 .grid_entry_red {
-    width: 85%;
-    border: 2px solid #333;
-    background-color: #ed4928;
-    color: #f1f1f1;
-    border-radius: 5px;
-    margin: 10px;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 2px;
     font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
+    color: #f1f1f1;
+    background-color: #ed4928;
 }
 
 .grid_entry_yellow {
-    width: 85%;
+    max-width: 100%;
+    max-height: 100%;
     border: 2px solid #333;
-    background-color: #fffb00;
-    color: #333;
-    border-radius: 5px;
-    margin: 10px;
+    border-radius: 2px;
     font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
+    color: #333;
+    background-color: #fffb00;
 }
 
 #button_row {
@@ -382,13 +453,13 @@
 }
 
 .error_popup {
-    z-index: 1000;
+    z-index: 5;
     top: 2%;
     position: absolute;
     left: 30%;
     width: 40%;
     height: 20%;
-    border-radius: 5px;
+    border-radius: 2px;
     border: #333 2px solid;
     background-color: #f2f2f2;
 }
@@ -416,23 +487,27 @@
     width: 45%;
 }
 
+.double_span {
+    grid-column: span 2;
+}
+
 .dropdown {
     text-align: center;
     border: 2px solid black;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 5px;
     cursor: pointer;
     font-size: large;
     background-color: #f1f1f1;
-    margin: 5px;
-    width: 95%;
+    width: 100%;
     box-sizing: border-box;
 }
 
 .dev_banner {
+    position: fixed;
     background-color: red;
     text-align: center;
-    z-index: 10000;
+    z-index: 10;
     width: 100%;
     font-family: 'Courier New', Courier, monospace;
 }
@@ -464,30 +539,41 @@
 }
 
 .red_sensor {
+    border: none;
     background-color: red;
     color: #f1f1f1;
 }
 
 .green_sensor {
+    border: none;
     background-color: #5ff037;
     color: #333;
 }
 
 .equipment_container {
+    position: fixed;
+    z-index: 1;
+    right: 0;
+    width: 225px;
+    height: 100%;
+    margin: 0;
+    list-style: none;
     text-align: center;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin: 0 10% 0 10%;
+    background-color: #f2f2f2;
 }
 
 .equipment {
-    min-height: 50px;
-    margin: 5px;
+    transition-duration: .25s;
     background-color: #f1f1f1;
     font-size: larger;
     font-family: Arial, Helvetica, sans-serif;
     color: #333;
-    border-radius: 5px;
+    border-radius: 2px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 10px 10px 0;
+    width: 200px;
+    z-index: 1;
 }
 
 .equipment:hover {
@@ -498,39 +584,32 @@
 }
 
 .equipment_popup {
-    z-index: 1000;
-    top: 10%;
-    position: absolute;
-    left: 30%;
-    width: 40%;
-    height: auto;
-    border-radius: 5px;
-    border: #333 2px solid;
-    background-color: #f2f2f2;
+    color: #333;
+    background-color: #dadada;
+    width: 200px;
+    transition-duration: 0.75s;
+    overflow: hidden;
+    max-height: 0;
+    margin: 0 13px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.equipment_popup_show {
+    max-height: 100vh;
 }
 
 .no_display {
     display: none;
 }
 
-.server_status {
-    text-align: center;
-    background-color: #08afe6;
-    color: #f1f1f1;
-    padding: 2px 5px 2px 5px;
-    border-radius: 5px;
-    position: absolute;
-    right: 20px;
-}
-
 .lab_readings {
+    margin: 0;
     text-align: center;
-    background-color: #08afe6;
-    color: #f1f1f1;
-    padding: 2px 5px 2px 5px;
-    border-radius: 5px;
-    position: absolute;
-    left: 20px;
+    background-color: #333;
+    color: #c5c5c5;
+    font-size: large;
+    width: 100%;
+    padding: 10px 5px;
 }
 
 .status_dot {
@@ -564,7 +643,11 @@
 }
 
 .navbar {
-    padding: 10px 0 0 10px;
+    position: fixed;
+    padding: 10px;
+    background-color: white;
+    width: 100%;
+    z-index: 1;
 }
 
 .navbar_button {
@@ -572,6 +655,7 @@
     color: #08afe6;
     font-size: larger;
     font-style: italic;
+    font-weight: 600;
     border: none;
 }
 
@@ -587,7 +671,7 @@
 .status_message {
     border: #333 2px solid;
     display: inline-block;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 5px;
     font-size: large;
     margin: 5px;
@@ -598,8 +682,10 @@
 .selected_sensor {
     background-color: lightgray;
     border: #333 2px solid;
-    border-radius: 5px;
-    width: auto;
+    border-radius: 2px;
+    width: 100%;
+    margin-left: -12px;
+    padding: 10px;
 }
 
 .batches_container {
@@ -612,45 +698,8 @@
 .shipping_batches {
     background-color: #333;
     color: #3dc6ea;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 5px;
-}
-
-.rainbow {
-    background: linear-gradient(90deg,
-            rgba(255, 0, 0, 1) 0%,
-            rgba(255, 154, 0, 1) 10%,
-            rgba(208, 222, 33, 1) 20%,
-            rgba(79, 220, 74, 1) 30%,
-            rgba(63, 218, 216, 1) 40%,
-            rgba(47, 201, 226, 1) 50%,
-            rgba(28, 127, 238, 1) 60%,
-            rgba(95, 21, 242, 1) 70%,
-            rgba(186, 12, 248, 1) 80%,
-            rgba(251, 7, 217, 1) 90%,
-            rgba(255, 0, 0, 1) 100%);
-}
-
-.rainbowApp {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: linear-gradient(90deg,
-            rgba(255, 0, 0, 1) 0%,
-            rgba(255, 154, 0, 1) 10%,
-            rgba(208, 222, 33, 1) 20%,
-            rgba(79, 220, 74, 1) 30%,
-            rgba(63, 218, 216, 1) 40%,
-            rgba(47, 201, 226, 1) 50%,
-            rgba(28, 127, 238, 1) 60%,
-            rgba(95, 21, 242, 1) 70%,
-            rgba(186, 12, 248, 1) 80%,
-            rgba(251, 7, 217, 1) 90%,
-            rgba(255, 0, 0, 1) 100%);
 }
 
 .graph {
@@ -710,16 +759,11 @@
 
 
 .remove_batch_button {
-    position: absolute;
-    bottom: 0;
-    right: 0;
     height: max-content;
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: 2px;
+    height: 28px;
     cursor: pointer;
     font-size: large;
     color: #f1f1f1;
-    margin: 5px;
-    width: 45%;
-    box-sizing: border-box;
+    border: none;
 }

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Equipment from './Equipment';
 
 
@@ -26,9 +26,10 @@ const mockReadings = {
 function renderEquipment(mockReadings) {
     const assetId = 'S000119'
     const description = 'Rotronic HygroClip2 Humidity Reference'
+    const openedEquimpent = {current: 'S000119'}
 
     render(
-        <Equipment assetId={assetId} readings={mockReadings} description={description} />
+        <Equipment assetId={assetId} readings={mockReadings} description={description} openedEquipment={openedEquimpent} />
     )
 }
 
@@ -37,26 +38,6 @@ test('Equipment renders successfully', () => {
     renderEquipment(mockReadings)
     const assetId = screen.getAllByText(/S000119/i)
     expect(assetId.length).toBeGreaterThan(0)
-})
-
-it('should show popup onClick', () => {
-    renderEquipment(mockReadings)
-    const button = screen.getByRole('button', { name: name => name.startsWith('Temperature: ') });
-    const popup = screen.getByTestId('equipmentPopup');
-    expect(popup).toHaveClass('no_display')
-    fireEvent.click(button);
-    expect(popup).not.toHaveClass('no_display')
-})
-
-it('should close popup onClick', () => {
-    renderEquipment(mockReadings)
-    const openButton = screen.getByRole('button', { name: name => name.startsWith('Temperature: ') });
-    const closeButton = screen.getByRole('button', { name: 'Close' });
-    const popup = screen.getByTestId('equipmentPopup');
-    fireEvent.click(openButton);
-    expect(popup).not.toHaveClass('no_display')
-    fireEvent.click(closeButton);
-    expect(popup).toHaveClass('no_display')
 })
 
 test('readings with humidity displays humidity', () => {

@@ -1,16 +1,30 @@
+import { useEffect, useState } from "react";
 import styles from "../../styles/styles.module.css";
 import round from "../../utils/round";
-import { useState } from "react";
 
-function Equipment({ assetId, readings, description }) {
-    const [displayStyle, setDisplayStyle] = useState(styles.no_display);
+function Equipment({ assetId, readings, description, openedEquipment, updateData }) {
     let referenceColor;
+    const [shownStyle, setShownStyle] = useState('')
     const temperature = `Temperature: ${round(readings.Temperature)}`;
     const humidity = readings.hasOwnProperty('Humidity') ? `Humidity: ${round(readings.Humidity)}` : ``;
 
-    const showPopup = () => {
-        setDisplayStyle('')
+    const toggleChecked = () => {
+        if (shownStyle !== styles.equipment_popup_show) {
+            openedEquipment.current = assetId
+            setShownStyle(styles.equipment_popup_show)
+        } else {
+            openedEquipment.current = ''
+            setShownStyle('')
+        }
+        updateData()
     }
+
+    useEffect(() => {
+        if (openedEquipment.current !== assetId && shownStyle) {
+            setShownStyle('')
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [openedEquipment.current])
 
     let elements;
     if (!readings.hasOwnProperty('Humidity')) {
@@ -22,11 +36,10 @@ function Equipment({ assetId, readings, description }) {
         elements = (
             <>
                 <hr />
-                <h1 className={styles.title}>Temperature: {readings.Temperature}</h1>
+                <h1 className={styles.title}>Temperature: {round(readings.Temperature, 10)}</h1>
                 <h1 className={styles.title}>{stableString}</h1>
-                <h1 className={styles.title}>Slope: {JSON.stringify(readings.stability_data['slope'])}</h1>
-                <h1 className={styles.title}>Standard Deviation: {JSON.stringify(readings.stability_data['standard_deviation'])}</h1>
-                <hr />
+                <h1 className={styles.title}>Slope: {JSON.stringify(round(readings.stability_data['slope'], 10))}</h1>
+                <h1 className={styles.title}>STD DEV: {JSON.stringify(round(readings.stability_data['standard_deviation'], 10))}</h1>
             </>)
     } else {
         let stableString = 'Humidity not stable';
@@ -39,31 +52,29 @@ function Equipment({ assetId, readings, description }) {
                 <hr />
                 <h1 className={styles.title}>Humidity: {readings.Humidity}</h1>
                 <h1 className={styles.title}>{stableString}</h1>
-                <h1 className={styles.title}>Slope: {JSON.stringify(readings.stability_data['humidity']['slope'])}</h1>
-                <h1 className={styles.title}>Standard Deviation: {JSON.stringify(readings.stability_data['humidity']['standard_deviation'])}</h1>
+                <h1 className={styles.title}>Slope: {JSON.stringify(round(readings.stability_data['humidity']['slope'], 10))}</h1>
+                <h1 className={styles.title}>STD DEV: {JSON.stringify(round(readings.stability_data['humidity']['standard_deviation'], 10))}</h1>
                 <hr />
                 <h1 className={styles.title}>Temperature: {readings.Temperature}</h1>
                 <h1 className={styles.title}>{(JSON.stringify(readings.stability_data.temperature['stable']) === 'true') ? 'Temperature stable' : 'Temperature not stable'}</h1>
-                <h1 className={styles.title}>Slope: {JSON.stringify(readings.stability_data['temperature']['slope'])}</h1>
-                <h1 className={styles.title}>Standard Deviation: {JSON.stringify(readings.stability_data['temperature']['standard_deviation'])}</h1>
-                <hr />
+                <h1 className={styles.title}>Slope: {JSON.stringify(round(readings.stability_data['temperature']['slope'], 10))}</h1>
+                <h1 className={styles.title}>STD DEV: {JSON.stringify(round(readings.stability_data['temperature']['standard_deviation'], 10))}</h1>
             </>
         )
     }
     const infoPopup = (
-        <div className={`${styles.equipment_popup} ${displayStyle}`} data-testid={'equipmentPopup'}>
+        <div className={`${styles.equipment_popup} ${shownStyle}`} data-testid={'equipmentPopup'}>
             <h1 className={styles.title}>Reference: {assetId} | {description}</h1>
             {elements}
-            <br />
-            <br />
-            <button className={styles.default_button} id={styles.popup_close} onClick={() => setDisplayStyle(styles.no_display)}>Close</button>
         </div>
     )
 
     return (
         <>
+                <button className={`${styles.equipment} ${referenceColor}`} onClick={toggleChecked}>
+                    {temperature}<br />{humidity}{humidity ? <br /> : ''}{assetId}
+                </button>
             {infoPopup}
-            <button className={`${styles.equipment} ${referenceColor}`} onClick={showPopup}>{temperature}<br />{humidity}{humidity ? <br /> : ''}{assetId}</button>
         </>
     )
 }
