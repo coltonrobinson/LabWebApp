@@ -33,6 +33,9 @@ function Metrics() {
       const colors = ['#FF000095', '#0000FF95', '#FFFF0095', '#FF000095', '#FFFF0095', '#08afe695']
       const promises = [];
       calibrationProcedures.current = await callApi('get-calibration-procedures')
+      if (!Array.isArray(calibrationProcedures.current)) {
+        calibrationProcedures.current = [];
+      }
       for (let i = 2; i >= 0; i--) {
         const month = today.getMonth() - i;
         const startDate = new Date(today.getFullYear(), month, 1);
