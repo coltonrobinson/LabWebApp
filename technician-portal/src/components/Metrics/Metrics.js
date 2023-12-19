@@ -22,7 +22,7 @@ function Metrics() {
 
   const today = new Date();
   const [totalSensors, setTotalSensors] = useState([]);
-  const calibrationProcedures = useRef('');
+  const calibrationProcedures = useRef([]);
   const [datasets, setDataSets] = useState([]);
   const [totalDataSets, setTotalDataSets] = useState([]);
 
