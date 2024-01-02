@@ -75,9 +75,9 @@ function SignInMenu() {
     <div className={styles.sign_in_menu}>
       <div className={styles.menu}>
         <form onSubmit={handleSubmit}>
-          <input type='text' value={email} onChange={e => setEmail(e.target.value)} className={styles.default_text_box} placeholder={'Enter your email address'} />
-          <input type='password' value={password} onChange={e => setPassword(e.target.value)} className={styles.default_text_box} placeholder={'Enter your password'} />
-          <input type='submit' className={styles.default_button}></input>
+          <input type='text' value={email} onChange={e => setEmail(e.target.value)} className={styles.default_text_box} placeholder={'Email'} />
+          <input type='password' value={password} onChange={e => setPassword(e.target.value)} className={styles.default_text_box} placeholder={'Password'} />
+          <input type='submit' className={styles.default_button} value={'Log in'}></input>
         </form>
       </div>
     </div>

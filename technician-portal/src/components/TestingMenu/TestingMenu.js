@@ -88,7 +88,7 @@ function TestingMenu({ setPoints }) {
                                 break;
 
                             case 3:
-                                elementClass = styles.humidity_grid;
+                                elementClass = `${styles.humidity_grid} ${styles.grid_row}`;
                                 if (recentReadings[0].devices_under_test[`${sensor.sensor_id}temp`] !== undefined) {
                                     currentReadingCell = <div className={styles.grid_entry_green}>
                                         {`${recentReadings[0].devices_under_test[`${sensor.sensor_id}humidity`].toFixed(2)}%RH\n
@@ -467,7 +467,7 @@ function TestingMenu({ setPoints }) {
         case 3:
             menu = (
                 <div className={styles.testing_grid}>
-                    <div className={styles.humidity_grid}>
+                    <div className={`${styles.humidity_grid} ${styles.grid_row}`}>
                         <button className={`${styles.default_button} ${styles.red}`} onClick={selectSensor}>Clear selection</button>
                         <button className={styles.default_button} onClick={() => { setRefreshButtonText('Loading...'); setStableTimesToLoading(); refresh(); setRefreshButtonText('Refresh') }}>{refreshButtonText}</button>
                         <button className={styles.default_button} onClick={() => createHumidityReading(0, 2.1, 0.45)}>{setPoints[0].humidity}%RH<br />{setPoints[0].temperature}°C</button>

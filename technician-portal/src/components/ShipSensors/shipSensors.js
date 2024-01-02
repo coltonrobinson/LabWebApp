@@ -89,7 +89,7 @@ function ShipSensors() {
                             {orders.map(order => {
                                 return <label key={order.order_id} className={styles.check_box_container}>
                                     <input value={order.order_id} className={styles.grid_check_box} type="checkbox" checked={ordersSelected.includes(order.order_id)} onChange={handleCheck} />
-                                    <span className={styles.batch_button}>{order.customer_order_number} | {order.order_id} | Sensors: {order.sensors}</span>
+                                    <div className={styles.check_box_span}>{order.customer_order_number}<br />{order.order_id}<br />Sensors: {order.sensors}</div>
                                 </label>
                             })}
                         </div>

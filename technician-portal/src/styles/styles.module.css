@@ -87,6 +87,7 @@
     top: 100px;
     right: 0;
     left: 0;
+    padding: 0 10%;
 }
 
 .default_button {
@@ -350,9 +351,10 @@
 
 .test_menu {
     position: relative;
-    width: 90%;
+    max-width: 90%;
     margin-top: 10px;
     margin-left: 4%;
+    margin-right: 4%;
     text-align: center;
     background-color: #f2f2f2;
     border-radius: 2px;
@@ -390,9 +392,7 @@
 }
 
 .humidity_grid {
-    display: grid;
     grid-template-columns: repeat(5, 1fr);
-    padding: 0 10px 0 10px;
 }
 
 .grid_entry {
@@ -737,6 +737,29 @@
     top: 50%;
     -ms-transform: translate(-100%, -50%);
     transform: translate(-100%, -50%);
+}
+
+.check_box_span {
+    border: none;
+    text-align: center;
+    border-radius: 2px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: large;
+    color: #08afe6;
+    margin: 5px;
+    width: 90%;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #f3f3f3;
+}
+
+.check_box_span:hover {
+    background-color: #dadada;
+}
+
+.check_box_span:active {
+    box-shadow: 2px 2px 5px #333;
 }
 
 .check_box_container:hover input~.grid_check_box {

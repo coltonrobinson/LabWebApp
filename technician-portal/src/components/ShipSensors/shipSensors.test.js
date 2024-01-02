@@ -95,7 +95,7 @@ test('select order toggles in list', async () => {
             </AppWrapper>
         )
     })
-    const selectAll = screen.getByText(/test \| 1/i)
+    const selectAll = screen.getByText(/test/i)
     fireEvent.click(selectAll)
     fireEvent.click(selectAll)
 })

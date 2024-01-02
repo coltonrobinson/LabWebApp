@@ -14,6 +14,16 @@ Chart.register(
 );
 
 
+function parseDate(date) {
+  if (date.getMonth() > 12) {
+    return new Date(date.getFullYear() - 1, date.getMonth() - 12, 1);
+  } else if (date.getMonth() < 1) {
+    return new Date(date.getFullYear() - 1, date.getMonth() + 12, 1);
+  } else {
+    return date;
+  }
+}
+
 function Metrics() {
   const monthNames = [
     "January", "February", "March", "April", "May", "June", "July",
@@ -37,8 +47,8 @@ function Metrics() {
         calibrationProcedures.current = [];
       }
       for (let i = 2; i >= 0; i--) {
-        const month = today.getMonth() - i;
-        const startDate = new Date(today.getFullYear(), month, 1);
+        const modifiedDate = new Date(today.getFullYear(), today.getMonth() - i, 1)
+        const startDate = parseDate(modifiedDate);
         const promise = callApi('get-calibrations-by-month', { start_date: startDate })
           .then(response => {
             let calibrationProcedureTotals = []
@@ -113,8 +123,7 @@ function Metrics() {
     },
   };
 
-  const labels = monthNames.slice(today.getMonth() - 2, today.getMonth() + 1);
-
+  const labels = [monthNames[parseDate(new Date(today.getFullYear(), today.getMonth() - 2), 1).getMonth()], monthNames[parseDate(new Date(today.getFullYear(), today.getMonth() - 1), 1).getMonth()], monthNames[parseDate(new Date(today.getFullYear(), today.getMonth()), 1).getMonth()]];
   const byProcedureData = {
     labels,
     datasets: datasets,
@@ -124,21 +133,25 @@ function Metrics() {
     labels,
     datasets: totalDataSets,
   };
-
   if (totalDataSets.length === 0) {
     return (
-      <h1 className={styles.title}>Loading...</h1>
+      <>
+        <br />
+        <br />
+        <h1 className={styles.title}>Loading...</h1>
+      </>
     )
   }
 
   return (
     <div data-testid='graphs'>
+      <br />
       <div className={styles.graph_grid}>
         <div className={styles.graph}>
-          {<Bar options={byProcedureOptions} data={byProcedureData} />}
+          <Bar options={byProcedureOptions} data={byProcedureData} />
         </div>
         <div className={styles.graph}>
-          {<Bar options={totalOptions} data={totalData} />}
+          <Bar options={totalOptions} data={totalData} />
         </div>
       </div>
     </div>
