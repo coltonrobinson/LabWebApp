@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from 'react-chartjs-2';
 import styles from "../../styles/styles.module.css";
 import callApi from '../../utils/api/callApi';
@@ -10,7 +11,8 @@ Chart.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 
@@ -77,7 +79,7 @@ function Metrics() {
         } else {
           newDatasets.push(
             {
-              label: `CP ${i + 1}`,
+              label: `CP ${i + 1}: ${calibrationProcedures.current[i].calibration_procedure.replace(', 3-Set Points', '').replace('Monnit ', '')}`,
               data: [sensorsData[0][i], sensorsData[1][i], sensorsData[2][i]],
               backgroundColor: colors[i],
               borderColor: '#333',
@@ -100,8 +102,16 @@ function Metrics() {
   const byProcedureOptions = {
     responsive: true,
     plugins: {
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        offset: -5,
+        formatter: function(value) {
+          return value > 0 ? value : ''
+        },
+      },
       legend: {
-        position: 'bottom',
+        display: false,
       },
       title: {
         display: true,
@@ -113,8 +123,16 @@ function Metrics() {
   const totalOptions = {
     responsive: true,
     plugins: {
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        offset: -5,
+        formatter: function(value) {
+          return value > 0 ? value : ''
+        },
+      },
       legend: {
-        position: 'bottom',
+        display: false,
       },
       title: {
         display: true,
@@ -145,6 +163,7 @@ function Metrics() {
 
   return (
     <div data-testid='graphs'>
+      <script src="chartjs-plugin-datalabels.js"></script>
       <br />
       <div className={styles.graph_grid}>
         <div className={styles.graph}>
