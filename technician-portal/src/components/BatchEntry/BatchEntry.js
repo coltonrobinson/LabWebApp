@@ -36,7 +36,6 @@ function BatchEntry() {
                 setPopupMessage('Please sign in');
             }
         }
-
         if (batches.length === 1 && isMounted) {
             callApi('get-batches-by-active-state', { active: true })
                 .then(response => {

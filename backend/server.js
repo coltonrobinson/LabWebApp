@@ -700,12 +700,14 @@ app.get('/api/get-batches-by-active-state', (req, res) => {
                 }
                 batch.sensors = result.rows;
                 count++;
-
-                if (count === batches.length) {
-                    res.json(batches);
-                }
+                res.json(batches);
             });
         }
+
+        if (batches.length === 0) {
+            res.json(batches);
+        }
+        
         for (const batch of batches) {
             querySensors(batch);
         }
