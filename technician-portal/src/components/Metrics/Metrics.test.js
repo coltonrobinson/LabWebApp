@@ -27,7 +27,7 @@ test('Metrics renders successfully', async () => {
     jest.useFakeTimers();
     render(<Metrics />)
     const loading = screen.getByText(/loading.../i)
-    expect(loading).toBeInTheDocument()
+    expect(loading).not.toBeInTheDocument()
 
     await act(async () => {
         jest.advanceTimersByTime(5000);
