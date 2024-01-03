@@ -153,6 +153,7 @@ function Metrics() {
         <div className={styles.graph}>
           <Bar options={totalOptions} data={totalData} />
         </div>
+        <h1 className={styles.title}>Testing CI/CD</h1>
       </div>
     </div>
   );
