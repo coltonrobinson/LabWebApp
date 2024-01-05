@@ -159,6 +159,9 @@ function TestingMenu({ setPoints }) {
         const setters = [setPoint1StableTime, setPoint2StableTime, setPoint3StableTime];
         const references = ['S000114', 'S000115', 'S000116']
         for (let i = 0; i < setters.length; i++) {
+            if (!setPoints) {
+                return;
+            }
             if (calibrationProcedureId === 3) {
                 stableTime = await callApi('get-last-humidity-stable-reading', { 'set_point': setPoints[i].humidity })
             } else if (calibrationProcedureId === 5) {

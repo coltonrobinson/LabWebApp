@@ -700,16 +700,18 @@ app.get('/api/get-batches-by-active-state', (req, res) => {
                 }
                 batch.sensors = result.rows;
                 count++;
-                res.json(batches);
+                return batches;
             });
         }
 
         if (batches.length === 0) {
             res.json(batches);
-        }
-        
-        for (const batch of batches) {
-            querySensors(batch);
+        } else {
+            let finalBatches = []
+            for (const batch of batches) {
+                finalBatches.push[querySensors(batch)];
+            }
+            res.json(batches);
         }
     });
 });
