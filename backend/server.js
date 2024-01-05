@@ -709,7 +709,7 @@ app.get('/api/get-batches-by-active-state', (req, res) => {
         } else {
             let finalBatches = []
             for (const batch of batches) {
-                finalBatches.push[querySensors(batch)];
+                finalBatches.push(querySensors(batch));
             }
             res.json(batches);
         }
