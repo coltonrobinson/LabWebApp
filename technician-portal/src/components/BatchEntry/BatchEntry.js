@@ -15,6 +15,18 @@ function BatchEntry() {
 
     const [batches, setBatches] = useState([<h1 className={styles.title} key={'fillerKey'}>Loading...</h1>]);
 
+    async function getBatchSensors(batches) {
+        const promises = []
+        for (const batch of batches) {
+            promises.push(callApi('get-sensors', { batch_id: batch.batch_id })
+                .then(sensors => {
+                    batches[batches.indexOf(batch)].sensors = sensors;
+                }))
+        }
+        await Promise.all(promises);
+        return batches;
+    }
+
     useEffect(() => {
         let isMounted = true;
 
@@ -46,26 +58,29 @@ function BatchEntry() {
                         setBatches([<h1 className={styles.title} key={'fillerKey'}>No batches found</h1>]);
                         return;
                     }
-                    const batchList = []
-                    const orders = [...new Set(response.map(batch => batch.order_id))].sort((a, b) => b - a)
+                    getBatchSensors(response)
+                        .then(response => {
+                            const batchList = []
+                            const orders = [...new Set(response.map(batch => batch.order_id))].sort((a, b) => b - a)
 
-                    for (const order of orders) {
-                        const batches = [...new Set(response.filter(batch => batch.order_id === order))].sort((a, b) => b - a);
-                        batchList.push(
-                            <div key={orders.indexOf(order)}>
-                                <hr />
-                                <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
-                                {batches.map((batch, index) => {
-                                    return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} key={index} />
-                                })}
-                            </div>
-                        )
-                    }
+                            for (const order of orders) {
+                                const batches = [...new Set(response.filter(batch => batch.order_id === order))].sort((a, b) => b - a);
+                                batchList.push(
+                                    <div key={orders.indexOf(order)}>
+                                        <hr />
+                                        <h1 className={styles.title}>{`TO: ${batches[0].customer_order_number} | Order: ${order}`}</h1>
+                                        {batches.map((batch, index) => {
+                                            return <BatchDisplay batch={batch} handleButtonClick={handleButtonClick} key={index} />
+                                        })}
+                                    </div>
+                                )
+                            }
 
-                    if (isMounted) {
-                        setBatches(batchList);
-                    }
-                });
+                            if (isMounted) {
+                                setBatches(batchList);
+                            }
+                        });
+                })
         }
 
         return () => {

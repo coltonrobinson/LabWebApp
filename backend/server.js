@@ -686,33 +686,13 @@ app.get('/api/get-batches', (req, res) => {
 app.get('/api/get-batches-by-active-state', (req, res) => {
     const active = req.query.active;
 
+
     pool.query('SELECT * FROM api_batch INNER JOIN api_order ON api_batch.order_id = api_order.order_id WHERE api_batch.active=$1 ORDER BY batch_id DESC', [active], (err, result) => {
         if (err) {
             return res.status(500).json({ error: `Error executing query: ${err}` });
         }
         let batches = result.rows;
-        let count = 0;
-
-        function querySensors(batch) {
-            pool.query('SELECT * FROM api_batch INNER JOIN api_sensor ON api_batch.batch_id = api_sensor.batch_id WHERE api_batch.batch_id = $1', [batch.batch_id], (err, result) => {
-                if (err) {
-                    return res.status(500).json({ error: `Error executing sensor query: ${err}` });
-                }
-                batch.sensors = result.rows;
-                count++;
-                return batches;
-            });
-        }
-
-        if (batches.length === 0) {
-            res.json(batches);
-        } else {
-            let finalBatches = []
-            for (const batch of batches) {
-                finalBatches.push(querySensors(batch));
-            }
-            res.json(batches);
-        }
+        res.json(batches);
     });
 });
 
